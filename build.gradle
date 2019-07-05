@@ -29,7 +29,12 @@ dependencies {
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	compileOnly group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "$springBootVersion"
+	annotationProcessor group: "org.springframework.boot", name: "spring-boot-configuration-processor", version: "$springBootVersion"
+
 	// https://projectlombok.org
 	compileOnly 'org.projectlombok:lombok:1.18.8'
 	annotationProcessor 'org.projectlombok:lombok:1.18.8'
 }
+
+compileJava.dependsOn(processResources)

@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="keywords" content="${keywords}">
+  <meta name="description" content="${description}">
   <title>${pageTitle}</title>
   <link href="/css/main.css" rel="stylesheet">
 </head>

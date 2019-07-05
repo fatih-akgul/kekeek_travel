@@ -1,6 +1,7 @@
 package com.kekeek.travel.controller;
 
 import com.kekeek.travel.model.SitePage;
+import com.kekeek.travel.properties.KekeekProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,18 +14,24 @@ import org.springframework.web.client.RestTemplate;
 public class PageController {
 
     private RestTemplate restTemplate;
+    private KekeekProperties properties;
 
     @Autowired
-    public PageController(RestTemplate restTemplate) {
+    public PageController(RestTemplate restTemplate, KekeekProperties properties) {
         this.restTemplate = restTemplate;
+        this.properties = properties;
     }
 
     @GetMapping({"/"})
-    public String handleRequest(Model model) {
-        SitePage homePage = restTemplate.getForObject("http://localhost:3080/site_pages/homepage", SitePage.class);
+    public String getHomePage(Model model) {
+        String homePageIdentifier = "homepage";
+        String homePageApiUrl = properties.getApi().getUrlSitePage(homePageIdentifier);
+        SitePage homePage = restTemplate.getForObject(homePageApiUrl, SitePage.class);
 
         if (homePage != null) {
             model.addAttribute("pageTitle", homePage.getTitle());
+            model.addAttribute("keywords", homePage.getKeywords());
+            model.addAttribute("description", homePage.getTitle());
         }
         return "index";
     }
