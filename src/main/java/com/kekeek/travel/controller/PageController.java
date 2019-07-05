@@ -30,7 +30,7 @@ public class PageController {
 
         if (homePage != null) {
             model.addAttribute("pageTitle", homePage.getTitle());
-            model.addAttribute("keywords", homePage.getKeywords());
+            model.addAttribute("keywords", String.join(", ", homePage.getKeywords()));
             model.addAttribute("description", homePage.getTitle());
         }
         return "index";
