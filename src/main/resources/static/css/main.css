@@ -1,10 +1,17 @@
 /*CSS Variables*/
 :root {
   --padding-container-main: 1rem;
-  --color-dark: #333;
-  --color-light: #fff;
-  --color-link: #6baacc;
-  --color-dark-alt: #555;
+  --color-dark: #fff;
+  --color-light: #333;
+  --color-link: #558bcc;
+  --color-dark-alt: #f3f3f3;
+
+  /* Dark mode? */
+  /*--color-dark: #333;*/
+  /*--color-light: #fff;*/
+  /*--color-link: #6baacc;*/
+  /*--color-dark-alt: #555;*/
+
   --shadow: 0 1px 5px rgba(104, 104, 104, 0.8);
   --color-highlight: #cc272e;
 }
@@ -84,6 +91,7 @@ body > footer {
 
 a {
   text-decoration: none;
+  font-weight: bold;
   color: var(--color-link);
 }
 
@@ -108,7 +116,7 @@ p {
 }
 
 .main-nav a:hover {
-  background: var(--color-dark);
+  background: var(--color-dark-alt);
   color: var(--color-light);
 }
 
