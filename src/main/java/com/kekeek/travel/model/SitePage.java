@@ -10,6 +10,7 @@ import java.util.Collection;
 public class SitePage extends KekeekModel {
     private String identifier;
     private String title;
+    private String description;
     private String language;
     private Collection<String> keywords;
 }

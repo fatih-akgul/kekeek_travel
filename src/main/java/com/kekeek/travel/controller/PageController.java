@@ -31,7 +31,7 @@ public class PageController {
         if (homePage != null) {
             model.addAttribute("pageTitle", homePage.getTitle());
             model.addAttribute("keywords", String.join(", ", homePage.getKeywords()));
-            model.addAttribute("description", homePage.getTitle());
+            model.addAttribute("description", homePage.getDescription());
         }
         return "index";
     }
