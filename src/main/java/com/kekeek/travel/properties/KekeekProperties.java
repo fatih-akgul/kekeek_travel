@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:kekeek.properties")
+@PropertySource("classpath:properties/kekeek.properties")
 @ConfigurationProperties(prefix = "kekeek")
 @Data
 public class KekeekProperties {

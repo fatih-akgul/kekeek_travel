@@ -9,13 +9,16 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestTemplateConfig {
 
+    @Value("${API_USERNAME}")
+    private String apiUsername;
+
     @Value("${API_PASSWORD}")
     private String apiPassword;
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder
-                .basicAuthentication("api-user", apiPassword)
+                .basicAuthentication(apiUsername, apiPassword)
                 .build();
     }
 }
