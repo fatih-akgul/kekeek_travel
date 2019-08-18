@@ -6,7 +6,11 @@ import lombok.Data;
 public class ApiProperties {
     private String baseUrl;
 
-    public String getUrlSitePage(String sitePageIdentifier) {
+    public String getUrlForPage(String sitePageIdentifier) {
         return baseUrl + "/pages/" + sitePageIdentifier;
+    }
+
+    public String getUrlForContent(String pageIdentifier, String contentIdentifier) {
+        return baseUrl + "/pages/" + pageIdentifier + "/contents/" + contentIdentifier;
     }
 }

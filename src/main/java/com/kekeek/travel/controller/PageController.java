@@ -1,5 +1,6 @@
 package com.kekeek.travel.controller;
 
+import com.kekeek.travel.model.Content;
 import com.kekeek.travel.model.SitePage;
 import com.kekeek.travel.properties.KekeekProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +26,27 @@ public class PageController {
     @GetMapping({"/"})
     public String getHomePage(Model model) {
         String homePageIdentifier = "homepage";
-        String homePageApiUrl = properties.getApi().getUrlSitePage(homePageIdentifier);
+        String homePageApiUrl = properties.getApi().getUrlForPage(homePageIdentifier);
         SitePage homePage = restTemplate.getForObject(homePageApiUrl, SitePage.class);
 
         if (homePage != null) {
             model.addAttribute("pageTitle", homePage.getTitle());
             model.addAttribute("keywords", String.join(", ", homePage.getKeywords()));
             model.addAttribute("description", homePage.getDescription());
+
+            addContentToModel(homePageIdentifier, "main-content", "mainContent", model);
+            addContentToModel(homePageIdentifier, "links-center", "centerLinks", model);
+            addContentToModel(homePageIdentifier, "faq", "faq", model);
+            addContentToModel(homePageIdentifier, "latest-articles", "latestArticles", model);
         }
         return "index";
+    }
+
+    private void addContentToModel(String pageIdentifier, String contentIdentifier, String nameInModel, Model model) {
+        String contentUrl = properties.getApi().getUrlForContent(pageIdentifier, contentIdentifier);
+        Content content = restTemplate.getForObject(contentUrl, Content.class);
+        if (content != null) {
+            model.addAttribute(nameInModel, content.getContentText());
+        }
     }
 }

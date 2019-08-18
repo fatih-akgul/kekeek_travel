@@ -50,6 +50,13 @@ body {
 
 img {
   max-width: 100%;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+
+hr {
+  margin-top: 0.6rem;
+  margin-bottom: 0.6rem;
 }
 
 body > header {
@@ -128,6 +135,15 @@ p {
 
 .main-content p {
   padding-bottom: 1rem;
+}
+
+.main-content ul {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.main-content li {
+  padding: 0.2rem 0;
 }
 
 .sidebar h1 {
