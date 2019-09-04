@@ -7,7 +7,7 @@ import java.util.Collection;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SitePage extends KekeekModel {
+public class SitePage extends EntityModel {
     private String identifier;
     private String language = "en";
     private String title;
@@ -23,4 +23,5 @@ public class SitePage extends KekeekModel {
     private String imageDescription;
 
     private String parentPageIdentifier;
+    private Integer sequence;
 }

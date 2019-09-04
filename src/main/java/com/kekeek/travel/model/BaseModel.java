@@ -5,15 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 
 import java.io.IOException;
-import java.util.Date;
 
 @Data
-class KekeekModel {
-    private Long id;
-    private Date createdAt;
-    private Date updatedAt;
-    private String website;
-
+abstract class BaseModel {
     public String toJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);

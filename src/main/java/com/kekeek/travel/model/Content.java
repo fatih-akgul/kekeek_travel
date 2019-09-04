@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Content extends KekeekModel {
+public class Content extends EntityModel {
     private String identifier;
     private String title;
     private String description;

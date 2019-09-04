@@ -1,6 +1,7 @@
 package com.kekeek.travel.util;
 
 import com.kekeek.travel.model.Content;
+import com.kekeek.travel.model.PageHierarchy;
 import com.kekeek.travel.model.SitePage;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -60,6 +61,7 @@ public class ContentLoader {
             }
 
             if (page != null) {
+                processPageHierarchy(page, parentFolder);
                 processPageContents(page, folder);
             }
         });
@@ -113,6 +115,28 @@ public class ContentLoader {
             System.out.println("Exception of type " + ex.getClass()
                     + " while adding page from file " + jsonFile.getAbsolutePath() + ": "
                     + ex.getMessage());
+        }
+
+        return null;
+    }
+
+    private static PageHierarchy processPageHierarchy(SitePage page, File parentFolder) {
+        if (parentFolder != null) {
+            try {
+                PageHierarchy pageHierarchy = new PageHierarchy();
+                pageHierarchy.setChildIdentifier(page.getIdentifier());
+                pageHierarchy.setParentIdentifier(parentFolder.getName());
+                pageHierarchy.setSequence(page.getSequence());
+
+                String jsonStr = pageHierarchy.toJson();
+
+                String url = API_URL + "/hierarchy";
+                return restTemplate.postForObject(url, new HttpEntity<>(jsonStr, getHeaders()), PageHierarchy.class);
+            } catch (IOException ex) {
+                System.out.println("Exception of type " + ex.getClass()
+                        + " while adding page hierarchy " + parentFolder.getName() + " -> " + page.getIdentifier() + ": "
+                        + ex.getMessage());
+            }
         }
 
         return null;
