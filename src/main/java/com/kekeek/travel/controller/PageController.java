@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
@@ -40,6 +41,13 @@ public class PageController {
             addContentToModel(homePageIdentifier, "latest-articles", "latestArticles", model);
         }
         return "index";
+    }
+
+    @GetMapping({"/{pageIdentifier}"})
+    public String getArticle(Model model, @PathVariable final String pageIdentifier) {
+        model.addAttribute("pageIdentifier", pageIdentifier);
+
+        return "article";
     }
 
     private void addContentToModel(String pageIdentifier, String contentIdentifier, String nameInModel, Model model) {
