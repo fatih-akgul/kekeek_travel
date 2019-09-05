@@ -11,4 +11,6 @@ import org.springframework.context.annotation.PropertySource;
 @Data
 public class KekeekProperties {
     private ApiProperties api;
+
+    private String baseImageUrl;
 }

@@ -179,7 +179,25 @@ p {
   border-left: 0;
 }
 
-/* Media Queries */
+/*
+START: Text Formatting
+ */
+.picture_caption {
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #005500;
+  padding-left: 1rem;
+}
+
+p::first-letter {
+  font-size: 200%;
+  font-weight: bold;
+  color: var(--color-highlight);
+}
+
+/*
+START: Media Queries
+ */
 @media(max-width: 1600px) {
   .main-nav ul {
     grid-template-columns: repeat(8, 1fr);

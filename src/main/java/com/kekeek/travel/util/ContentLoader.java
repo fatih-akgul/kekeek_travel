@@ -32,7 +32,11 @@ public class ContentLoader {
         File[] subDirs = topDir.listFiles(File::isDirectory);
 
         // Process each top level directory with null parent
-        Stream.of(Objects.requireNonNull(subDirs)).forEach(subDir -> processFolder(subDir, null));
+        try {
+            Stream.of(Objects.requireNonNull(subDirs)).forEach(subDir -> processFolder(subDir, null));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void processFolder(File folder, File parentFolder) {

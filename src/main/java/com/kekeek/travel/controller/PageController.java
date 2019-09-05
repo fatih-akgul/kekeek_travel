@@ -27,13 +27,10 @@ public class PageController {
     @GetMapping({"/"})
     public String getHomePage(Model model) {
         String homePageIdentifier = "homepage";
-        String homePageApiUrl = properties.getApi().getUrlForPage(homePageIdentifier);
-        SitePage homePage = restTemplate.getForObject(homePageApiUrl, SitePage.class);
+        SitePage homePage = getPage(homePageIdentifier);
 
         if (homePage != null) {
-            model.addAttribute("pageTitle", homePage.getTitle());
-            model.addAttribute("keywords", String.join(", ", homePage.getKeywords()));
-            model.addAttribute("description", homePage.getDescription());
+            processPageMetaFields(homePage, model);
 
             addContentToModel(homePageIdentifier, "main-content", "mainContent", model);
             addContentToModel(homePageIdentifier, "links-center", "centerLinks", model);
@@ -43,9 +40,25 @@ public class PageController {
         return "index";
     }
 
+    private SitePage getPage(String pageIdentifier) {
+        String pageApiUrl = properties.getApi().getUrlForPage(pageIdentifier);
+        return restTemplate.getForObject(pageApiUrl, SitePage.class);
+    }
+
+    private void processPageMetaFields(SitePage page, Model model) {
+        model.addAttribute("pageTitle", page.getTitle());
+        model.addAttribute("keywords", String.join(", ", page.getKeywords()));
+        model.addAttribute("description", page.getDescription());
+    }
+
     @GetMapping({"/{pageIdentifier}"})
     public String getArticle(Model model, @PathVariable final String pageIdentifier) {
-        model.addAttribute("pageIdentifier", pageIdentifier);
+        SitePage articlePage = getPage(pageIdentifier);
+        processPageMetaFields(articlePage, model);
+
+        addContentToModel(pageIdentifier, "main-content", "mainContent", model);
+        model.addAttribute("articleImage", properties.getBaseImageUrl() + "/pages/" + pageIdentifier + "/" + pageIdentifier + ".jpg");
+        model.addAttribute("articleImageDescription", articlePage.getImageDescription());
 
         return "article";
     }

@@ -2,13 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Foobar</title>
+  <meta name="keywords" content="${keywords}">
+  <meta name="description" content="${description}">
+  <title>${pageTitle}</title>
   <link href="/css/main.css" rel="stylesheet">
 </head>
 
 <body>
 <main>
-  ${pageIdentifier}
+  <div class="main-content">
+    <h1>${pageTitle}</h1>
+    <img src="${articleImage}" alt="${articleImageDescription}">
+    <div class="picture_caption">
+    ${articleImageDescription}
+    </div>
+    <br><br>
+    <p>
+    ${mainContent}
+    </p>
+  </div>
 </main>
 <header>
   <div class="main-nav">
