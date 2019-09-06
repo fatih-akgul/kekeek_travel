@@ -20,6 +20,9 @@
     <p>
     ${mainContent}
     </p>
+    <#list children as child>
+      <a href="/${child.identifier}">${child.title}</a> <#sep><span class="highlight">|</span></#sep>
+    </#list>
   </div>
 </main>
 <header>

@@ -4,12 +4,17 @@ import com.kekeek.travel.model.Content;
 import com.kekeek.travel.model.SitePage;
 import com.kekeek.travel.properties.KekeekProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Collection;
 
 @Controller
 @RequestMapping("/")
@@ -59,6 +64,15 @@ public class PageController {
         addContentToModel(pageIdentifier, "main-content", "mainContent", model);
         model.addAttribute("articleImage", properties.getBaseImageUrl() + "/pages/" + pageIdentifier + "/" + pageIdentifier + ".jpg");
         model.addAttribute("articleImageDescription", articlePage.getImageDescription());
+
+        String childrenUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/children";
+        ResponseEntity<Collection<SitePage>> response = restTemplate.exchange(
+                childrenUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<Collection<SitePage>>(){});
+        Collection<SitePage> children = response.getBody();
+        model.addAttribute("children", children);
 
         return "article";
     }

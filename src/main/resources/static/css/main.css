@@ -195,6 +195,11 @@ p::first-letter {
   color: var(--color-highlight);
 }
 
+.highlight {
+  color: var(--color-highlight);
+  font-weight: bold;
+}
+
 /*
 START: Media Queries
  */
