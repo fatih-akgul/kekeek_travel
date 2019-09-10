@@ -124,7 +124,7 @@ public class ContentLoader {
         return null;
     }
 
-    private static PageHierarchy processPageHierarchy(SitePage page, File parentFolder) {
+    private static void processPageHierarchy(SitePage page, File parentFolder) {
         if (parentFolder != null) {
             try {
                 PageHierarchy pageHierarchy = new PageHierarchy();
@@ -135,15 +135,13 @@ public class ContentLoader {
                 String jsonStr = pageHierarchy.toJson();
 
                 String url = API_URL + "/hierarchy";
-                return restTemplate.postForObject(url, new HttpEntity<>(jsonStr, getHeaders()), PageHierarchy.class);
+                restTemplate.postForObject(url, new HttpEntity<>(jsonStr, getHeaders()), PageHierarchy.class);
             } catch (IOException ex) {
                 System.out.println("Exception of type " + ex.getClass()
                         + " while adding page hierarchy " + parentFolder.getName() + " -> " + page.getIdentifier() + ": "
                         + ex.getMessage());
             }
         }
-
-        return null;
     }
 
     private static void processPageContents(SitePage page, File folder) {
@@ -152,65 +150,62 @@ public class ContentLoader {
         File[] htmlFiles = folder.listFiles(f -> f.isFile() && f.getName().endsWith(".html"));
         if (htmlFiles != null) {
             Stream.of(htmlFiles).forEach(htmlFile -> {
-                String contentIdentifier = htmlFile.getName().substring(0, htmlFile.getName().lastIndexOf(".html"));
+                String contentIdentifier = getFileNameWithoutExtension(htmlFile);
                 System.out.println(">>>>> " + pageName + "/" + contentIdentifier);
 
-                File jsonFile = new File(htmlFile.getParent() + "/" + contentIdentifier + ".json");
-                if (jsonFile.exists()) {
-                    try {
-                        String contentOnDisk = Files.readString(htmlFile.toPath());
-                        String baseUrl = API_URL + "/" + pageName + "/contents";
-                        try {
-                            findAndUpdateContent(baseUrl, contentIdentifier, jsonFile, contentOnDisk);
-                        } catch (HttpClientErrorException.NotFound e) {
-                            addContent(baseUrl, contentIdentifier, jsonFile, contentOnDisk);
-                        } catch (Exception e) {
-                            System.out.println("Exception of type " + e.getClass()
-                                    + " while findAndUpdate of content " + baseUrl + "/" + contentIdentifier);
-                        }
-                    } catch (IOException e) {
-                        System.out.println("IOException of type " + e.getClass() + " while reading file " + htmlFile.getAbsolutePath());
-                    }
-                } else {
-                    System.out.println(">>>>> There is no json file corresponding to " + htmlFile.getAbsolutePath());
+                String baseUrl = API_URL + "/" + pageName + "/contents";
+                try {
+                    findAndUpdateContent(baseUrl, htmlFile);
+                } catch (HttpClientErrorException.NotFound e) {
+                    addContent(baseUrl, htmlFile);
+                } catch (Exception e) {
+                    System.out.println("Exception of type " + e.getClass()
+                            + " while findAndUpdate of content " + baseUrl + "/" + contentIdentifier);
                 }
             });
         }
     }
 
-    private static void findAndUpdateContent(String baseUrl, String contentIdentifier,
-                                             File jsonFile, String contentOnDisk) throws HttpClientErrorException.NotFound {
-        String url = baseUrl + "/" + contentIdentifier;
+    private static void findAndUpdateContent(String baseUrl, File htmlFile) throws HttpClientErrorException.NotFound {
+        String url = baseUrl + "/" + getFileNameWithoutExtension(htmlFile);
         restTemplate.getForObject(url, Content.class);
         try {
-            restTemplate.put(url, getContentRequest(jsonFile, contentIdentifier, contentOnDisk));
+            restTemplate.put(url, getContentRequest(htmlFile));
         } catch (IOException e) {
             System.out.println("Exception of type " + e.getClass()
                     + " while updating content " + url
-                    + " from file " + jsonFile.getAbsolutePath()
+                    + " from file " + htmlFile.getAbsolutePath()
                     + ": " + e.getMessage());
         }
     }
 
-    private static void addContent(String baseUrl, String contentIdentifier, File jsonFile, String contentOnDisk) {
+    private static void addContent(String baseUrl, File htmlFile) {
         try {
-            restTemplate.postForObject(baseUrl, getContentRequest(jsonFile, contentIdentifier, contentOnDisk), Content.class);
-        } catch (IOException e) {
+            restTemplate.postForObject(baseUrl, getContentRequest(htmlFile), Content.class);
+        } catch (Exception e) {
             System.out.println("Exception of type " + e.getClass()
-                    + " while adding content " + baseUrl + "/" + contentIdentifier
-                    + " from file " + jsonFile.getAbsolutePath() + ": "
+                    + " while adding content " + baseUrl + "/" + getFileNameWithoutExtension(htmlFile)
+                    + " from file " + htmlFile.getAbsolutePath() + ": "
                     + e.getMessage());
         }
     }
 
-    private static HttpEntity<String> getContentRequest(File jsonFile, String contentIdentifier, String contentOnDisk) throws IOException {
-        String jsonStr = Files.readString(jsonFile.toPath());
+    private static HttpEntity<String> getContentRequest(File htmlFile) throws IOException {
+        Content content = new Content();
+        String contentIdentifier = getFileNameWithoutExtension(htmlFile);
+        File jsonFile = new File(htmlFile.getParent() + "/" + contentIdentifier + ".content.json");
 
-        Content content = Content.fromJson(jsonStr, Content.class);
+        if (jsonFile.exists()) {
+            String jsonStr = Files.readString(jsonFile.toPath());
+            content = Content.fromJson(jsonStr, Content.class);
+        }
         content.setIdentifier(contentIdentifier);
-        content.setContentText(contentOnDisk);
+        content.setContentText(Files.readString(htmlFile.toPath()));
 
-        jsonStr = content.toJson();
-        return new HttpEntity<>(jsonStr, getHeaders());
+        return new HttpEntity<>(content.toJson(), getHeaders());
+    }
+
+    private static String getFileNameWithoutExtension(File file) {
+        return file.getName().substring(0, file.getName().lastIndexOf("."));
     }
 }

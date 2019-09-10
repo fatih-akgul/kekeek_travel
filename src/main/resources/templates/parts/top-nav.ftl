@@ -1,6 +1,6 @@
 <ul>
-    <li class="nav-1"><a href="#">Home</a></li>
-    <li class="nav-2"><a href="#">Popular&nbsp;Spots</a></li>
+    <li class="nav-1"><a href="/">Home</a></li>
+    <li class="nav-2"><a href="/popular-spots">Popular&nbsp;Spots</a></li>
     <li class="nav-3"><a href="#">Travel&nbsp;Tips</a></li>
     <li class="nav-4"><a href="#">City&nbsp;Guides</a></li>
     <li class="nav-5"><a href="#">Activities</a></li>

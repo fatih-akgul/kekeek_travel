@@ -37,7 +37,7 @@ public class PageController {
         if (homePage != null) {
             processPageMetaFields(homePage, model);
 
-            addContentToModel(homePageIdentifier, "main-content", "mainContent", model);
+            addContentToModel(homePageIdentifier, "homepage", "mainContent", model);
             addContentToModel(homePageIdentifier, "links-center", "centerLinks", model);
             addContentToModel(homePageIdentifier, "faq", "faq", model);
             addContentToModel(homePageIdentifier, "latest-articles", "latestArticles", model);
@@ -59,22 +59,30 @@ public class PageController {
     @GetMapping({"/{pageIdentifier}"})
     public String getArticle(Model model, @PathVariable final String pageIdentifier) {
         SitePage articlePage = getPage(pageIdentifier);
+
+        model.addAttribute("article", articlePage);
         processPageMetaFields(articlePage, model);
 
-        addContentToModel(pageIdentifier, "main-content", "mainContent", model);
+        addContentToModel(pageIdentifier, pageIdentifier, "mainContent", model);
         model.addAttribute("articleImage", properties.getBaseImageUrl() + "/pages/" + pageIdentifier + "/" + pageIdentifier + ".jpg");
-        model.addAttribute("articleImageDescription", articlePage.getImageDescription());
 
         String childrenUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/children";
+        addPagesToModel(model, childrenUrl, "children");
+
+        String breadcrumbsUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/breadcrumbs";
+        addPagesToModel(model, breadcrumbsUrl, "breadcrumbs");
+
+        return "article";
+    }
+
+    private void addPagesToModel(Model model, String url, String modelKey) {
         ResponseEntity<Collection<SitePage>> response = restTemplate.exchange(
-                childrenUrl,
+                url,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Collection<SitePage>>(){});
-        Collection<SitePage> children = response.getBody();
-        model.addAttribute("children", children);
-
-        return "article";
+        Collection<SitePage> pages = response.getBody();
+        model.addAttribute(modelKey, pages);
     }
 
     private void addContentToModel(String pageIdentifier, String contentIdentifier, String nameInModel, Model model) {

@@ -11,8 +11,6 @@ public class Content extends EntityModel {
     private String description;
     private String language = "en";
     private String snippet;
-    private Integer pageNumber;
+    private Integer sequence;
     private String contentText;
-    private String image;
-    private String imageDescription;
 }
