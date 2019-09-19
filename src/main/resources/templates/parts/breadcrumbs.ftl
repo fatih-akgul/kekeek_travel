@@ -1,6 +1,6 @@
 <a href="/">Home</a> <span class="highlight">&nbsp;&gt;&gt;&nbsp;</span>
 <#list breadcrumbs as breadcrumb>
-    <#if breadcrumb.identifier == article.identifier>
+    <#if breadcrumb.identifier == articlePage.identifier>
         ${breadcrumb.title}
     <#else>
         <a href="/${breadcrumb.identifier}">${breadcrumb.title}</a>
