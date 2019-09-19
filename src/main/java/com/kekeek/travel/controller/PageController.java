@@ -72,6 +72,15 @@ public class PageController {
         String breadcrumbsUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/breadcrumbs";
         addPagesToModel(model, breadcrumbsUrl, "breadcrumbs");
 
+        String parentUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/parent";
+        SitePage parent = restTemplate.getForObject(parentUrl, SitePage.class);
+        model.addAttribute("parent", parent);
+
+        if (parent != null) {
+            String siblingsUrl = properties.getApi().getUrlForPage(parent.getIdentifier()) + "/children";
+            addPagesToModel(model, siblingsUrl, "siblings");
+        }
+
         return "article";
     }
 

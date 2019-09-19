@@ -29,14 +29,27 @@
 
     <hr>
     <div class="breadcrumbs-bottom">
-        <#include "/parts/breadcrumbs.ftl">
+        <#if (parent)?has_content>
+          <a href="${parent.identifier}">${parent.title}</a>
+        </#if>
+        <#if (siblings)?has_content>
+          &nbsp;<span class="highlight">|</span>&nbsp;
+            <#list siblings as sibling>
+                <#if sibling.identifier == article.identifier>
+                  ${sibling.title}
+                <#else>
+                  <a href="/${sibling.identifier}">${sibling.title}</a>
+                </#if>
+                <#sep>&nbsp;<span class="highlight">|</span>&nbsp;</#sep>
+            </#list>
+        </#if>
     </div>
     <hr>
     <br>
 
     <div class="child-pages">
         <#list children as child>
-          <a href="/${child.identifier}">${child.title}</a> <#sep><span class="highlight">|</span></#sep>
+          <a href="/${child.identifier}">${child.title}</a> <#sep>&nbsp;<span class="highlight">|</span>&nbsp;</#sep>
         </#list>
     </div>
   </div>
