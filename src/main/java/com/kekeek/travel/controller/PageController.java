@@ -61,25 +61,33 @@ public class PageController {
         SitePage articlePage = getPage(pageIdentifier);
 
         model.addAttribute("article", articlePage);
+        model.addAttribute("articlePage", articlePage);
         processPageMetaFields(articlePage, model);
 
         addContentToModel(pageIdentifier, pageIdentifier, "mainContent", model);
         model.addAttribute("articleImage", properties.getBaseImageUrl() + "/pages/" + pageIdentifier + "/" + pageIdentifier + ".jpg");
 
-        String childrenUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/children";
-        addPagesToModel(model, childrenUrl, "children");
-
         String breadcrumbsUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/breadcrumbs";
         addPagesToModel(model, breadcrumbsUrl, "breadcrumbs");
 
-        String parentUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/parent";
+        String contentPageIdentifier = pageIdentifier;
+        String parentUrl = properties.getApi().getUrlForPage(contentPageIdentifier) + "/parent";
         SitePage parent = restTemplate.getForObject(parentUrl, SitePage.class);
+        if ("article-page".equals(articlePage.getContentType()) && parent != null) {
+            model.addAttribute("article", parent);
+            contentPageIdentifier = parent.getIdentifier();
+            parentUrl = properties.getApi().getUrlForPage(contentPageIdentifier) + "/parent";
+            parent = restTemplate.getForObject(parentUrl, SitePage.class);
+        }
         model.addAttribute("parent", parent);
 
         if (parent != null) {
             String siblingsUrl = properties.getApi().getUrlForPage(parent.getIdentifier()) + "/children";
             addPagesToModel(model, siblingsUrl, "siblings");
         }
+
+        String childrenUrl = properties.getApi().getUrlForPage(contentPageIdentifier) + "/children";
+        addPagesToModel(model, childrenUrl, "children");
 
         return "article";
     }
