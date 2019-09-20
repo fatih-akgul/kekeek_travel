@@ -133,6 +133,12 @@ p {
   color: var(--color-highlight);
 }
 
+.main-content h2 {
+  padding-bottom: 1rem;
+  font-size: 1.3rem;
+  color: var(--color-highlight);
+}
+
 .main-content p {
   padding-bottom: 1rem;
 }

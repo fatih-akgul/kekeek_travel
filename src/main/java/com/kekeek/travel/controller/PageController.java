@@ -65,7 +65,7 @@ public class PageController {
         processPageMetaFields(articlePage, model);
 
         addContentToModel(pageIdentifier, pageIdentifier, "mainContent", model);
-        model.addAttribute("articleImage", properties.getBaseImageUrl() + "/pages/" + pageIdentifier + "/" + pageIdentifier + ".jpg");
+        model.addAttribute("articleImage", properties.getBaseImageUrl() + "/pages/" + pageIdentifier.substring(0, 2) + "/" + pageIdentifier + ".jpg");
 
         String breadcrumbsUrl = properties.getApi().getUrlForPage(pageIdentifier) + "/breadcrumbs";
         addPagesToModel(model, breadcrumbsUrl, "breadcrumbs");
@@ -81,13 +81,16 @@ public class PageController {
         }
         model.addAttribute("parent", parent);
 
-        if (parent != null) {
-            String siblingsUrl = properties.getApi().getUrlForPage(parent.getIdentifier()) + "/children";
-            addPagesToModel(model, siblingsUrl, "siblings");
-        }
+//        if (parent != null) {
+//            String siblingsUrl = properties.getApi().getUrlForPage(parent.getIdentifier()) + "/children";
+//            addPagesToModel(model, siblingsUrl, "siblings");
+//        }
 
         String childrenUrl = properties.getApi().getUrlForPage(contentPageIdentifier) + "/children";
-        addPagesToModel(model, childrenUrl, "children");
+        addPagesToModel(model, childrenUrl, "childArticles");
+
+        String pagesUrl = properties.getApi().getUrlForPage(contentPageIdentifier) + "/pages";
+        addPagesToModel(model, pagesUrl, "childPages");
 
         return "article";
     }

@@ -27,9 +27,8 @@
             ${mainContent}
         </p>
 
-
         <div class="child-pages">
-            <#if children?has_content >
+            <#if childPages?has_content >
                 <#if article.identifier == articlePage.identifier>
                     ${article.title}
                 <#else>
@@ -37,38 +36,29 @@
                 </#if>
                 &nbsp;<span class="highlight">|</span>&nbsp;
             </#if>
-            <#list children as child>
-                <#if child.identifier == articlePage.identifier>
-                    ${child.title}
+            <#list childPages as childPage>
+                <#if childPage.identifier == articlePage.identifier>
+                    ${childPage.title}
                 <#else>
-                    <a href="/${child.identifier}">${child.title}</a>
+                    <a href="/${childPage.identifier}">${childPage.title}</a>
                 </#if>
                 <#sep>&nbsp;<span class="highlight">|</span>&nbsp;</#sep>
             </#list>
         </div>
 
-        <#if children?has_content && parent?has_content>
-            <hr>
-        </#if>
-        <div class="breadcrumbs-bottom">
-            <#if parent?has_content>
-                <a href="${parent.identifier}">${parent.title}</a>
+        <div class="child-pages">
+            <#if childPages?has_content && childArticles?has_content>
+                <br><h2>In ${article.title}...</h2>
             </#if>
-            <#if siblings?has_content>
-                &nbsp;<span class="highlight">|</span>&nbsp;
-                <#list siblings as sibling>
-                    <#if sibling.identifier == article.identifier>
-                        ${sibling.title}
-                    <#else>
-                        <a href="/${sibling.identifier}">${sibling.title}</a>
-                    </#if>
-                    <#sep>&nbsp;<span class="highlight">|</span>&nbsp;</#sep>
-                </#list>
-            </#if>
+            <#list childArticles as child>
+                <#if child.identifier == articlePage.identifier>
+                    ${child.title}
+                <#else>
+                    <a href="/${child.identifier}">${child.title}</a>
+                </#if>
+                <#sep>&nbsp;<span class="highlight">--</span>&nbsp;</#sep>
+            </#list>
         </div>
-        <#if children?has_content && parent?has_content>
-            <hr>
-        </#if>
 
         <br>
     </div>
