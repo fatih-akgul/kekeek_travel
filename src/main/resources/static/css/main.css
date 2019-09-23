@@ -139,6 +139,12 @@ p {
   color: var(--color-highlight);
 }
 
+.main-content h3 {
+  padding-bottom: 1rem;
+  font-size: 1.1rem;
+  color: var(--color-highlight);
+}
+
 .main-content p {
   padding-bottom: 1rem;
 }
@@ -210,6 +216,7 @@ p::first-letter {
   text-align: center;
   margin-top: 1rem;
   margin-bottom: 2rem;
+  line-height: 1.6rem;
 }
 
 .breadcrumbs-top {

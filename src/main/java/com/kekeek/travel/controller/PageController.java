@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/")
@@ -35,7 +37,7 @@ public class PageController {
         SitePage homePage = getPage(homePageIdentifier);
 
         if (homePage != null) {
-            processPageMetaFields(homePage, model);
+            processPageMetaFields(homePage, model, null);
 
             addContentToModel(homePageIdentifier, "homepage", "mainContent", model);
             addContentToModel(homePageIdentifier, "links-center", "centerLinks", model);
@@ -50,9 +52,14 @@ public class PageController {
         return restTemplate.getForObject(pageApiUrl, SitePage.class);
     }
 
-    private void processPageMetaFields(SitePage page, Model model) {
-        model.addAttribute("pageTitle", page.getTitle());
-        model.addAttribute("keywords", String.join(", ", page.getKeywords()));
+    private void processPageMetaFields(SitePage page, Model model, SitePage parentArticle) {
+        Set<String> keywords = new HashSet<>(page.getKeywords());
+        if (parentArticle != null) {
+            keywords.addAll(parentArticle.getKeywords());
+        }
+
+        model.addAttribute("pageTitle", page.getDescription());
+        model.addAttribute("keywords", String.join(", ", keywords));
         model.addAttribute("description", page.getDescription());
     }
 
@@ -62,7 +69,7 @@ public class PageController {
 
         model.addAttribute("article", articlePage);
         model.addAttribute("articlePage", articlePage);
-        processPageMetaFields(articlePage, model);
+        processPageMetaFields(articlePage, model, null);
 
         addContentToModel(pageIdentifier, pageIdentifier, "mainContent", model);
         model.addAttribute("articleImage", properties.getBaseImageUrl() + "/pages/" + pageIdentifier.substring(0, 2) + "/" + pageIdentifier + ".jpg");
@@ -74,17 +81,13 @@ public class PageController {
         String parentUrl = properties.getApi().getUrlForPage(contentPageIdentifier) + "/parent";
         SitePage parent = restTemplate.getForObject(parentUrl, SitePage.class);
         if ("article-page".equals(articlePage.getContentType()) && parent != null) {
+            processPageMetaFields(articlePage, model, parent);
             model.addAttribute("article", parent);
             contentPageIdentifier = parent.getIdentifier();
             parentUrl = properties.getApi().getUrlForPage(contentPageIdentifier) + "/parent";
             parent = restTemplate.getForObject(parentUrl, SitePage.class);
         }
         model.addAttribute("parent", parent);
-
-//        if (parent != null) {
-//            String siblingsUrl = properties.getApi().getUrlForPage(parent.getIdentifier()) + "/children";
-//            addPagesToModel(model, siblingsUrl, "siblings");
-//        }
 
         String childrenUrl = properties.getApi().getUrlForPage(contentPageIdentifier) + "/children";
         addPagesToModel(model, childrenUrl, "childArticles");

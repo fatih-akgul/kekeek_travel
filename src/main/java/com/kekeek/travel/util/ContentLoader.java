@@ -116,9 +116,15 @@ public class ContentLoader {
         try {
             return restTemplate.postForObject(API_URL, getPageRequest(jsonFile, parentFolder), SitePage.class);
         } catch (IOException ex) {
+            System.out.println("IOException of type " + ex.getClass()
+                    + " while adding page from file " + jsonFile.getAbsolutePath() + ": "
+                    + ex.getMessage());
+        } catch (Exception ex) {
             System.out.println("Exception of type " + ex.getClass()
                     + " while adding page from file " + jsonFile.getAbsolutePath() + ": "
                     + ex.getMessage());
+
+            throw ex;
         }
 
         return null;

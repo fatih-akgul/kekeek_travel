@@ -14,7 +14,8 @@
         <#include "/parts/breadcrumbs.ftl">
     </div>
     <div class="main-content">
-        <h1>${articlePage.title}</h1>
+        <!-- google_ad_section_start -->
+        <h1>${articlePage.description}</h1>
         <#if (articlePage.imageDescription)?has_content>
             <img src="${articleImage}" alt="${articlePage.imageDescription}">
             <div class="picture_caption">
@@ -45,6 +46,8 @@
                 <#sep>&nbsp;<span class="highlight">|</span>&nbsp;</#sep>
             </#list>
         </div>
+
+        <!-- google_ad_section_end -->
 
         <div class="child-pages">
             <#if childPages?has_content && childArticles?has_content>

@@ -24,4 +24,12 @@ public class SitePage extends EntityModel {
 
     private String parentPageIdentifier;
     private Integer sequence;
+
+    public String getTitle() {
+        if (title == null) {
+            return null;
+        }
+
+        return title.trim().replaceAll(" ", "&nbsp;");
+    }
 }
