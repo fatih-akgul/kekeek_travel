@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class ContentLoader {
 
     private final static String TOP_DIR_NAME = "src/main/resources/content";
-    private final static String API_URL = "http://localhost:3080/pages";
+    private final static String API_URL = System.getenv("API_SERVER") + "/pages";
 
     private static String username = System.getenv("API_USERNAME");
     private static String password = System.getenv("API_PASSWORD");
