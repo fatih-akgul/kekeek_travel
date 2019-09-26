@@ -9,4 +9,5 @@ public class PageHierarchy extends BaseModel {
     private String parentIdentifier;
     private String childIdentifier;
     private Integer sequence;
+    private Boolean primary;
 }

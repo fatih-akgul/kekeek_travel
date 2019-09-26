@@ -31,9 +31,12 @@ public class ContentLoader {
         File topDir = new File(TOP_DIR_NAME);
         File[] subDirs = topDir.listFiles(File::isDirectory);
 
-        // Process each top level directory with null parent
         try {
+            // Process each top level directory with null parent
             Stream.of(Objects.requireNonNull(subDirs)).forEach(subDir -> processFolder(subDir, null));
+
+            // Process non-primary parent-child relationships
+            Stream.of(Objects.requireNonNull(subDirs)).forEach(ContentLoader::processHierarchies);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,16 +55,16 @@ public class ContentLoader {
         // - Create a page with current directory name if one doesn't exist
         // - Create page based on .json file
         // - Create content elements based on the .html files in the folder
-        File[] jsonFiles = folder.listFiles(f -> f.getName().equals(folder.getName() + ".json"));
+        String pageIdentifier = folder.getName();
+        File[] jsonFiles = folder.listFiles(f -> f.getName().equals(pageIdentifier + ".json"));
         Stream.of(Objects.requireNonNull(jsonFiles)).forEach(jsonFile -> {
-            String pageName = folder.getName();
             SitePage page = null;
             try {
                 page = findAndUpdatePage(jsonFile, parentFolder);
             } catch (HttpClientErrorException.NotFound e) {
                 page = addPage(jsonFile, parentFolder);
             } catch (Exception e) {
-                System.out.println("Exception of type " + e.getClass() + " while getting page " + pageName);
+                System.out.println("Exception of type " + e.getClass() + " while getting page " + pageIdentifier);
             }
 
             if (page != null) {
@@ -75,6 +78,41 @@ public class ContentLoader {
                 .filter(File::isDirectory)
                 .filter(d -> Files.exists(Paths.get(d.getAbsolutePath() + "/" + d.getName() + ".json"))) // contains .../pageName/pageName.json
                 .forEach(subDir -> processFolder(subDir, folder));
+    }
+
+    private static void processHierarchies(File folder) {
+        File[] folderContents = folder.listFiles();
+
+        // Return if empty folder
+        if (folderContents == null) {
+            System.out.println("There are no files or subdirectories under " + folder.getAbsolutePath());
+            return;
+        }
+
+        // Process each subdirectory in it
+        Stream.of(folderContents)
+                .filter(File::isDirectory)
+                .forEach(ContentLoader::processHierarchies);
+
+        // Process non-primary child relationships (childArticle-childIdentifier.json)
+        File[] hierarchyFiles = folder.listFiles(f -> f.getName().startsWith("childArticle-") && f.getName().endsWith(".json"));
+        Stream.of(Objects.requireNonNull(hierarchyFiles)).forEach(ContentLoader::processPageHierarchyJson);
+    }
+
+    private static void processPageHierarchyJson(File jsonFile) {
+        try {
+            String fileName = jsonFile.getName();
+
+            String jsonStr = Files.readString(jsonFile.toPath());
+            PageHierarchy pageHierarchy = PageHierarchy.fromJson(jsonStr, PageHierarchy.class);
+            pageHierarchy.setPrimary(Boolean.FALSE);
+            pageHierarchy.setParentIdentifier(jsonFile.getParentFile().getName());
+            pageHierarchy.setChildIdentifier(fileName.substring(fileName.indexOf("-") + 1, fileName.indexOf(".json")));
+
+            postPageHierarchy(pageHierarchy);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static HttpHeaders getHeaders() {
@@ -137,17 +175,21 @@ public class ContentLoader {
                 pageHierarchy.setChildIdentifier(page.getIdentifier());
                 pageHierarchy.setParentIdentifier(parentFolder.getName());
                 pageHierarchy.setSequence(page.getSequence());
+                pageHierarchy.setPrimary(Boolean.TRUE);
 
-                String jsonStr = pageHierarchy.toJson();
-
-                String url = API_URL + "/hierarchy";
-                restTemplate.postForObject(url, new HttpEntity<>(jsonStr, getHeaders()), PageHierarchy.class);
+                postPageHierarchy(pageHierarchy);
             } catch (IOException ex) {
                 System.out.println("Exception of type " + ex.getClass()
                         + " while adding page hierarchy " + parentFolder.getName() + " -> " + page.getIdentifier() + ": "
                         + ex.getMessage());
             }
         }
+    }
+
+    private static void postPageHierarchy(PageHierarchy pageHierarchy) throws IOException {
+        String jsonStr = pageHierarchy.toJson();
+        String url = API_URL + "/hierarchy";
+        restTemplate.postForObject(url, new HttpEntity<>(jsonStr, getHeaders()), PageHierarchy.class);
     }
 
     private static void processPageContents(SitePage page, File folder) {
