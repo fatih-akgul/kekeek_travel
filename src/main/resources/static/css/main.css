@@ -241,7 +241,7 @@ START: Media Queries
     grid-template-columns: repeat(8, 1fr);
   }
 
-  .main-nav .nav-10, .main-nav .nav-9 {
+  .main-nav .nav-9, .main-nav .nav-8 {
     display: none;
   }
 }
@@ -251,7 +251,7 @@ START: Media Queries
     grid-template-columns: repeat(6, 1fr);
   }
 
-  .main-nav .nav-8, .main-nav .nav-7 {
+  .main-nav .nav-7, .main-nav .nav-6 {
     display: none;
   }
 }
@@ -261,7 +261,7 @@ START: Media Queries
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .main-nav .nav-6, .main-nav .nav-5 {
+  .main-nav .nav-5, .main-nav .nav-4 {
     display: none;
   }
 
