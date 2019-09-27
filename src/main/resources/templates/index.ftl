@@ -12,8 +12,8 @@
 <main>
   <div class="main-content">
     ${mainContent}
-    <hr>
-    ${centerLinks}
+<#--    <hr>-->
+<#--    ${centerLinks}-->
     <hr>
     <br>
     ${faq}

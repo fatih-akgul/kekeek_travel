@@ -1,6 +1,5 @@
 <ul>
-    <li><a href="#">Home</a></li>
-    <li><a href="#">Contact</a></li>
-    <li><a href="#">Site Map</a></li>
-    <li><a href="#">Travel Resources</a></li>
+    <li><a href="/">Home</a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/site-map">Site Map</a></li>
 </ul>
