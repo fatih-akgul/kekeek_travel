@@ -159,6 +159,7 @@ p {
 .main-content ul {
   margin: 1rem 0;
   padding-left: 2rem;
+  line-height: 1.4rem;
 }
 
 .main-content li {
@@ -224,7 +225,7 @@ strong {
   font-weight: bold;
 }
 
-.child-pages {
+.main-content .child-pages {
   text-align: center;
   margin-top: 1rem;
   margin-bottom: 2rem;
