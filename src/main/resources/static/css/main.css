@@ -70,12 +70,15 @@ body > main {
   min-height: 400px;
   padding: var(--padding-container-main);
   border-left: 2px solid var(--color-dark-alt);
+  max-width: available;
 }
 
 body > aside {
   grid-area: sidebar;
   padding: var(--padding-container-main);
   background: var(--color-dark-alt);
+  max-width: max-content;
+  justify-self: right;
 }
 
 body > *:nth-child(odd) {}
@@ -125,6 +128,10 @@ p {
 .main-nav a:hover {
   background: var(--color-dark-alt);
   color: var(--color-light);
+}
+
+.main-content {
+  line-height: 2rem;
 }
 
 .main-content h1 {
@@ -208,6 +215,11 @@ p::first-letter {
 }
 
 .highlight {
+  color: var(--color-highlight);
+  font-weight: bold;
+}
+
+strong {
   color: var(--color-highlight);
   font-weight: bold;
 }

@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -45,6 +46,23 @@ public class PageController {
             addContentToModel(homePageIdentifier, "latest-articles", "latestArticles", model);
         }
         return "index";
+    }
+
+    @GetMapping({"/site-map"})
+    public String getSiteMap(Model model) {
+        ResponseEntity<List<SitePage>> response = restTemplate.exchange(
+                properties.getApi().getBaseUrl() + "/pages/articles",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<SitePage>>(){});
+        List<SitePage> articles = response.getBody();
+        model.addAttribute("articles", articles);
+
+        model.addAttribute("pageTitle", "Site Map - TurkeyForYou");
+        model.addAttribute("keywords", "Turkey,site,map");
+        model.addAttribute("description", "All articles on TurkeyForYou website");
+
+        return "site-map";
     }
 
     private SitePage getPage(String pageIdentifier) {
