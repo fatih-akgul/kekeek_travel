@@ -6,6 +6,9 @@ Environment variables required for KekeekTravelApplication:
 - API_USERNAME
 - API_PASSWORD
 - API_SERVER
+- BASE_IMAGE_URL
+- SITE_NAME
+- COUNTRY
 
 Environment variables required for ContentLoader:
 --

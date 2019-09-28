@@ -11,10 +11,11 @@
 <body>
 <main>
   <div class="main-content">
-    <h1>${siteName} Site Map</h1>
-    <#list articles as article>
-      &nbsp; &nbsp; <strong>${article?index + 1}.</strong> <a href="/${article.identifier}">${article.description}</a> <br>
-    </#list>
+    <h1>Contact Us</h1>
+    <form method="post" action="/contact">
+
+    </form>
+    ...
   </div>
 </main>
 <header>
