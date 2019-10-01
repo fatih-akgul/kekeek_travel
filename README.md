@@ -9,6 +9,10 @@ Environment variables required for KekeekTravelApplication:
 - BASE_IMAGE_URL
 - SITE_NAME
 - COUNTRY
+- SENDGRID_API_KEY
+- EMAIL_FROM_ADDRESS
+- EMAIL_FROM_NAME
+- EMAIL_TO_ADDRESS
 
 Environment variables required for ContentLoader:
 --

@@ -14,6 +14,8 @@
 
   --shadow: 0 1px 5px rgba(104, 104, 104, 0.8);
   --color-highlight: #cc272e;
+  --color-error: #cc272e;
+  --color-message: #0b5506;
 }
 
 html {
@@ -205,7 +207,7 @@ START: Text Formatting
 .picture_caption {
   font-style: italic;
   font-size: 0.9rem;
-  color: #005500;
+  color: var(--color-message);
   padding-left: 1rem;
 }
 
@@ -242,9 +244,32 @@ strong {
   text-align: center;
 }
 
+input[type=button], input[type=submit], input[type=reset] {
+  padding: 0.4rem 1.4rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.error, .message {
+  font-style: italic;
+  padding-bottom: 0.8rem;
+  font-weight: bold;
+}
+
+.error {
+  color: var(--color-error);
+}
+
+.message {
+  color: var(--color-message);
+}
+
 /*
 END: Text Formatting
  */
+
+
+
 
 /*
 START: Media Queries
