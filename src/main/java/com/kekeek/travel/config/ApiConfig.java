@@ -41,4 +41,8 @@ public class ApiConfig {
     public String getUrlAllArticles() {
         return getUrlPages() + "/articles";
     }
+
+    public String getUrlEmail() {
+        return apiServer + "/email";
+    }
 }

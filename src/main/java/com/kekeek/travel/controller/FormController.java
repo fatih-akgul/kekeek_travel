@@ -1,6 +1,5 @@
 package com.kekeek.travel.controller;
 
-import com.kekeek.travel.config.SiteConfig;
 import com.kekeek.travel.model.ContactForm;
 import com.kekeek.travel.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ public class FormController {
     private ContactService contactService;
 
     @Autowired
-    public FormController(ContactService contactService, SiteConfig siteConfig) {
+    public FormController(ContactService contactService) {
         this.contactService = contactService;
     }
 

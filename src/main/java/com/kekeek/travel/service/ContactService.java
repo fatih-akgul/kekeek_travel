@@ -1,60 +1,101 @@
 package com.kekeek.travel.service;
 
+import com.kekeek.travel.config.ApiConfig;
 import com.kekeek.travel.config.EmailConfig;
 import com.kekeek.travel.config.SiteConfig;
 import com.kekeek.travel.model.ContactForm;
 import com.sendgrid.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Service
 public class ContactService {
-
     private SiteConfig siteConfig;
     private EmailConfig emailConfig;
+    private ApiConfig apiConfig;
+    private HttpServletRequest request;
+    private RestTemplate restTemplate;
 
     @Autowired
-    public ContactService(SiteConfig siteConfig, EmailConfig emailConfig) {
+    public ContactService(RestTemplate restTemplate, SiteConfig siteConfig, EmailConfig emailConfig, ApiConfig apiConfig, HttpServletRequest request) {
         this.siteConfig = siteConfig;
         this.emailConfig = emailConfig;
+        this.request = request;
+        this.restTemplate = restTemplate;
+        this.apiConfig = apiConfig;
     }
 
     public void processContactForm(ContactForm contactForm) {
         if (contactForm.validate()) {
-            Email from = new Email(emailConfig.getFromAddress(), emailConfig.getFromName());
-            Email to = new Email(emailConfig.getToAddress());
-            String subject = siteConfig.getSiteName() + ": " + contactForm.getSubject();
-            String message = contactForm.getMessage() + "\n\nFROM: " + contactForm.getName() + " (" + contactForm.getEmail() + ")";
-            message = message.replace("\n", "\n\n");
-            Content content = new Content("text/plain", message);
+            Mail mail = constructMail(contactForm);
 
-            Mail mail = new Mail(from, subject, to, content);
-
-            SendGrid sendGrid = new SendGrid(emailConfig.getSendGridApiKey());
-            Request request = new Request();
+            String errorMessage = "Message could not be sent. Please try again later.";
             try {
-                request.setMethod(Method.POST);
-                request.setEndpoint("mail/send");
-                request.setBody(mail.build());
+                Response response = sendEmail(mail);
 
-                Response response = sendGrid.api(request);
-
-                System.out.println(response.getStatusCode());
-                System.out.println(response.getBody());
-                System.out.println(response.getHeaders());
+                if (response.getStatusCode() < 200 || response.getStatusCode() > 299) {
+                    contactForm.addError(errorMessage);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
-                contactForm.addError("Message could not be sent. Please try again later.");
+                contactForm.addError(errorMessage);
             }
+
+            saveEmailRequest(mail, contactForm);
 
             if (contactForm.getErrors().isEmpty()) {
                 contactForm.clearFields();
 
                 contactForm.addMessage("Thank you, your message has been sent.");
             }
+        }
+    }
+
+    private Mail constructMail(ContactForm contactForm) {
+        Email from = new Email(emailConfig.getFromAddress(), emailConfig.getFromName());
+        Email to = new Email(emailConfig.getToAddress());
+        String subject = siteConfig.getSiteName() + ": " + contactForm.getSubject();
+        String message = contactForm.getMessage() + "\n\nFROM: " + contactForm.getName() + " (" + contactForm.getEmail() + ")";
+        message = message.replace("\n", "\n\n");
+        Content content = new Content("text/plain", message);
+
+        return new Mail(from, subject, to, content);
+    }
+
+    private Response sendEmail(Mail mail) throws IOException {
+        SendGrid sendGrid = new SendGrid(emailConfig.getSendGridApiKey());
+        Request request = new Request();
+
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
+
+        return sendGrid.api(request);
+    }
+
+    private void saveEmailRequest(Mail mail, ContactForm contactForm) {
+        com.kekeek.travel.model.Email email = new com.kekeek.travel.model.Email();
+        email.setFromEmail(mail.getFrom().getEmail());
+        email.setFromName(mail.getFrom().getName());
+        email.setMessage(contactForm.getMessage());
+        email.setSenderEmail(contactForm.getEmail());
+        email.setSenderIp(getClientIp());
+        email.setSenderName(contactForm.getName());
+        email.setSubject(contactForm.getSubject());
+        email.setToEmail(mail.getPersonalization().get(0).getTos().get(0).getEmail());
+        email.setSuccess(contactForm.getErrors().isEmpty());
+        try {
+            restTemplate.postForObject(apiConfig.getUrlEmail(), getEmailRequest(email), com.kekeek.travel.model.Email.class);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -67,5 +108,30 @@ public class ContactService {
         model.addAttribute("description", title);
 
         model.addAttribute("contactFormData", contactFormData);
+    }
+
+    private String getClientIp() {
+        String remoteAddr = "";
+
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || "".equals(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
+        }
+
+        return remoteAddr;
+    }
+
+    private static HttpEntity<String> getEmailRequest(com.kekeek.travel.model.Email email) throws IOException {
+        String jsonStr = email.toJson();
+        return new HttpEntity<>(jsonStr, getHeaders());
+    }
+
+    private static HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return headers;
     }
 }
