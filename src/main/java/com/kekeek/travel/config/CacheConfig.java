@@ -8,6 +8,7 @@ import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +21,7 @@ public class CacheConfig {
         return new ConcurrentMapCacheManager() {
 
             @Override
+            @NonNull
             protected Cache createConcurrentMapCache(final String name) {
                 return new ConcurrentMapCache(name,
                         CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(100).build().asMap(), false);

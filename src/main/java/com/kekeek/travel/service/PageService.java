@@ -1,7 +1,6 @@
 package com.kekeek.travel.service;
 
 import com.kekeek.travel.config.ApiConfig;
-import com.kekeek.travel.config.EmailConfig;
 import com.kekeek.travel.config.SiteConfig;
 import com.kekeek.travel.model.Content;
 import com.kekeek.travel.model.SitePage;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +20,6 @@ import java.util.Map;
 @CacheConfig(cacheNames={"pages"})
 public class PageService extends BaseService {
     private SiteConfig siteConfig;
-    private EmailConfig emailConfig;
-    private HttpServletRequest request;
 
     @Autowired
     public PageService(RestTemplate restTemplate, SiteConfig siteConfig, ApiConfig apiConfig) {
