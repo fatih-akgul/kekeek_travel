@@ -2,12 +2,10 @@ package com.kekeek.travel.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Data
-@EnableCaching
 public class SiteConfig {
     @Value("${SITE_NAME}")
     private String siteName;
