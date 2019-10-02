@@ -6,17 +6,20 @@ import com.kekeek.travel.config.SiteConfig;
 import com.kekeek.travel.model.Content;
 import com.kekeek.travel.model.SitePage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @Service
+@CacheConfig(cacheNames={"pages"})
 public class PageService extends BaseService {
     private SiteConfig siteConfig;
     private EmailConfig emailConfig;
@@ -29,19 +32,23 @@ public class PageService extends BaseService {
         this.apiConfig = apiConfig;
     }
 
-    public void populateHomePageData(Model model) {
-        String homePageIdentifier = "homepage";
-        setMetaFields(homePageIdentifier, model);
+    @Cacheable
+    public Map<String, Object> getHomePageAttributes() {
+        String pageIdentifier = "homepage";
+        Map<String, Object> pageData = getMetaFields(pageIdentifier);
 
-        addContentToModel(homePageIdentifier, "homepage", "mainContent", model);
-        addContentToModel(homePageIdentifier, "links-center", "centerLinks", model);
-        addContentToModel(homePageIdentifier, "faq", "faq", model);
-        addContentToModel(homePageIdentifier, "latest-articles", "latestArticles", model);
+        pageData.put("mainContent", getContent(pageIdentifier, "homepage"));
+        pageData.put("centerLinks", getContent(pageIdentifier, "links-center"));
+        pageData.put("faq", getContent(pageIdentifier, "faq"));
+        pageData.put("latestArticles", getContent(pageIdentifier, "latest-articles"));
+
+        return pageData;
     }
 
-    public void populateSiteMapData(Model model) {
-        String siteMapIdentifier = "site-map";
-        setMetaFields(siteMapIdentifier, model);
+    @Cacheable
+    public Map<String, Object> getSiteMapAttributes() {
+        String pageIdentifier = "site-map";
+        Map<String, Object> pageData = getMetaFields(pageIdentifier);
 
         ResponseEntity<List<SitePage>> response = restTemplate.exchange(
                 apiConfig.getUrlAllArticles(),
@@ -49,46 +56,54 @@ public class PageService extends BaseService {
                 null,
                 new ParameterizedTypeReference<List<SitePage>>(){});
         List<SitePage> articles = response.getBody();
-        model.addAttribute("articles", articles);
+
+        pageData.put("articles", articles);
+
+        return pageData;
     }
 
-    public void populateArticlePageData(Model model, String pageIdentifier) {
+    @Cacheable
+    public Map<String, Object> getArticlePageAttributes(String pageIdentifier) {
         SitePage articlePage = getPage(pageIdentifier);
+        Map<String, Object> pageData = getMetaFields(articlePage);
 
-        model.addAttribute("article", articlePage);
-        model.addAttribute("articlePage", articlePage);
-        setMetaFields(articlePage, model);
+        pageData.put("article", articlePage);
+        pageData.put("articlePage", articlePage);
 
-        addContentToModel(pageIdentifier, pageIdentifier, "mainContent", model);
-        model.addAttribute("articleImage", siteConfig.getUrlPageImage(pageIdentifier));
+        pageData.put("mainContent", getContent(pageIdentifier, pageIdentifier));
+        pageData.put("articleImage", siteConfig.getUrlPageImage(pageIdentifier));
 
         String breadcrumbsUrl = apiConfig.getUrlPageBreadcrumbs(pageIdentifier);
-        addPagesToModel(model, breadcrumbsUrl, "breadcrumbs");
+        pageData.put("breadcrumbs", getPages(breadcrumbsUrl));
 
         String contentPageIdentifier = pageIdentifier;
         String parentUrl = apiConfig.getUrlPageParent(contentPageIdentifier);
         SitePage parent = restTemplate.getForObject(parentUrl, SitePage.class);
         if ("article-page".equals(articlePage.getContentType()) && parent != null) {
-            setMetaFields(articlePage, model, parent);
-            model.addAttribute("article", parent);
+            pageData.putAll(getMetaFields(articlePage, parent));
+            pageData.put("article", parent);
             contentPageIdentifier = parent.getIdentifier();
             parentUrl = apiConfig.getUrlPageParent(contentPageIdentifier);
             parent = restTemplate.getForObject(parentUrl, SitePage.class);
         }
-        model.addAttribute("parent", parent);
+        pageData.put("parent", parent);
 
         String childrenUrl = apiConfig.getUrlPageChildArticles(contentPageIdentifier);
-        addPagesToModel(model, childrenUrl, "childArticles");
+        pageData.put("childArticles", getPages(childrenUrl));
 
         String pagesUrl = apiConfig.getUrlPageChildPages(contentPageIdentifier);
-        addPagesToModel(model, pagesUrl, "childPages");
+        pageData.put("childPages", getPages(pagesUrl));
+
+        return pageData;
     }
 
-    private void addContentToModel(String pageIdentifier, String contentIdentifier, String nameInModel, Model model) {
+    private String getContent(String pageIdentifier, String contentIdentifier) {
         String contentUrl = apiConfig.getUrlContent(pageIdentifier, contentIdentifier);
         Content content = restTemplate.getForObject(contentUrl, Content.class);
         if (content != null) {
-            model.addAttribute(nameInModel, content.getContentText());
+            return content.getContentText();
         }
+
+        return null;
     }
 }

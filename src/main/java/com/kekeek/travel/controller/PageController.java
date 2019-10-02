@@ -21,21 +21,21 @@ public class PageController {
 
     @GetMapping({"/"})
     public String getHomePage(Model model) {
-        pageService.populateHomePageData(model);
+        model.addAllAttributes(pageService.getHomePageAttributes());
 
         return "index";
     }
 
     @GetMapping({"/site-map"})
     public String getSiteMap(Model model) {
-        pageService.populateSiteMapData(model);
+        model.addAllAttributes(pageService.getSiteMapAttributes());
 
         return "site-map";
     }
 
     @GetMapping({"/{pageIdentifier}"})
     public String getArticlePage(Model model, @PathVariable final String pageIdentifier) {
-        pageService.populateArticlePageData(model, pageIdentifier);
+        model.addAllAttributes(pageService.getArticlePageAttributes(pageIdentifier));
 
         return "article";
     }

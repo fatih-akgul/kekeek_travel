@@ -6,17 +6,20 @@ import com.kekeek.travel.config.SiteConfig;
 import com.kekeek.travel.model.ContactForm;
 import com.sendgrid.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Map;
 
 @Service
+@CacheConfig(cacheNames={"pages"})
 public class ContactService extends BaseService {
     private SiteConfig siteConfig;
     private EmailConfig emailConfig;
@@ -97,9 +100,16 @@ public class ContactService extends BaseService {
         }
     }
 
-    public void setContactFormPageAttributes(Model model, ContactForm contactFormData) {
-        setMetaFields("contact", model);
-        model.addAttribute("contactFormData", contactFormData);
+    public Map<String, Object> getContactFormPageAttributes(ContactForm contactFormData) {
+        Map<String, Object> pageData = getContactPageMetaFields();
+        pageData.put("contactFormData", contactFormData);
+
+        return pageData;
+    }
+
+    @Cacheable
+    public Map<String, Object> getContactPageMetaFields() {
+        return getMetaFields("contact");
     }
 
     private String getClientIp() {

@@ -26,6 +26,7 @@ repositories {
 dependencies {
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
 	runtimeOnly group: 'org.springframework.boot', name: 'spring-boot-devtools'
 	testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 

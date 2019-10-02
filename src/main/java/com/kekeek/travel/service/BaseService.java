@@ -5,38 +5,38 @@ import com.kekeek.travel.model.SitePage;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 abstract class BaseService {
 
     ApiConfig apiConfig;
     RestTemplate restTemplate;
 
-    void setMetaFields(SitePage page, Model model) {
-        setMetaFields(page, model, null);
+    Map<String, Object> getMetaFields(SitePage page) {
+        return getMetaFields(page, null);
     }
 
-    void setMetaFields(String pageIdentifier, Model model) {
+    Map<String, Object> getMetaFields(String pageIdentifier) {
         SitePage page = getPage(pageIdentifier);
-        setMetaFields(page, model);
+        return getMetaFields(page);
     }
 
-    void setMetaFields(SitePage page, Model model, SitePage parentArticle) {
+    Map<String, Object> getMetaFields(SitePage page, SitePage parentArticle) {
         Set<String> keywords = new HashSet<>(page.getKeywords());
         if (parentArticle != null) {
             keywords.addAll(parentArticle.getKeywords());
         }
 
-        model.addAttribute("pageTitle", page.getDescription());
-        model.addAttribute("keywords", String.join(", ", keywords));
-        model.addAttribute("description", page.getDescription());
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("pageTitle", page.getDescription());
+        fields.put("keywords", String.join(", ", keywords));
+        fields.put("description", page.getDescription());
 
-        addPagesToModel(model, apiConfig.getUrlTopNavPages(), "topNavPages");
+        fields.put("topNavPages", getPages(apiConfig.getUrlTopNavPages()));
+
+        return fields;
     }
 
     SitePage getPage(String pageIdentifier) {
@@ -44,13 +44,12 @@ abstract class BaseService {
         return restTemplate.getForObject(pageApiUrl, SitePage.class);
     }
 
-    void addPagesToModel(Model model, String url, String modelKey) {
+    Collection<SitePage> getPages(String url) {
         ResponseEntity<Collection<SitePage>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Collection<SitePage>>(){});
-        Collection<SitePage> pages = response.getBody();
-        model.addAttribute(modelKey, pages);
+        return response.getBody();
     }
 }

@@ -22,14 +22,14 @@ public class FormController {
 
     @GetMapping({"/contact"})
     public String getContactPage(Model model) {
-        contactService.setContactFormPageAttributes(model, new ContactForm());
+        model.addAllAttributes(contactService.getContactFormPageAttributes(new ContactForm()));
 
         return "contact";
     }
 
     @PostMapping({"/contact"})
     public String postContactPage(ContactForm contactFormData,  Model model) {
-        contactService.setContactFormPageAttributes(model, contactFormData);
+        model.addAllAttributes(contactService.getContactFormPageAttributes(contactFormData));
         contactService.processContactForm(contactFormData);
 
         return "contact";
