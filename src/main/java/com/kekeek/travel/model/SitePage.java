@@ -25,6 +25,8 @@ public class SitePage extends EntityModel {
     private String parentPageIdentifier;
     private Integer sequence;
 
+    private Boolean topLevel = Boolean.FALSE;
+
     public String getTitle() {
         if (title == null) {
             return null;

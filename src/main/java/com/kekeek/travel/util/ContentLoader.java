@@ -129,6 +129,8 @@ public class ContentLoader {
         page.setIdentifier(jsonFile.getParentFile().getName());
         if (parentFolder != null) {
             page.setParentPageIdentifier(parentFolder.getName());
+        } else {
+            page.setTopLevel(Boolean.TRUE);
         }
 
         jsonStr = page.toJson();

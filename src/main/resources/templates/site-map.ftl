@@ -11,7 +11,7 @@
 <body>
 <main>
   <div class="main-content">
-    <h1>${siteName} Site Map</h1>
+    <h1>${pageTitle}</h1>
     <#list articles as article>
       &nbsp; &nbsp; <strong>${article?index + 1}.</strong> <a href="/${article.identifier}">${article.description}</a> <br>
     </#list>

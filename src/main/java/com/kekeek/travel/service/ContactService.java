@@ -17,12 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Service
-public class ContactService {
+public class ContactService extends BaseService {
     private SiteConfig siteConfig;
     private EmailConfig emailConfig;
-    private ApiConfig apiConfig;
     private HttpServletRequest request;
-    private RestTemplate restTemplate;
 
     @Autowired
     public ContactService(RestTemplate restTemplate, SiteConfig siteConfig, EmailConfig emailConfig, ApiConfig apiConfig, HttpServletRequest request) {
@@ -100,13 +98,7 @@ public class ContactService {
     }
 
     public void setContactFormPageAttributes(Model model, ContactForm contactFormData) {
-        String title = "Contact Us - " + siteConfig.getSiteName();
-        String siteName = siteConfig.getCountry();
-
-        model.addAttribute("pageTitle", title);
-        model.addAttribute("keywords", String.join(", ", siteName, "contact"));
-        model.addAttribute("description", title);
-
+        setMetaFields("contact", model);
         model.addAttribute("contactFormData", contactFormData);
     }
 

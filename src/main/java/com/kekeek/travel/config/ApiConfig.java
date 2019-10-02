@@ -42,6 +42,10 @@ public class ApiConfig {
         return getUrlPages() + "/articles";
     }
 
+    public String getUrlTopNavPages() {
+        return getUrlPages() + "/menu-pages";
+    }
+
     public String getUrlEmail() {
         return apiServer + "/email";
     }
