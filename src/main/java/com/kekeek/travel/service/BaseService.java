@@ -3,6 +3,8 @@ package com.kekeek.travel.service;
 import com.kekeek.travel.config.ApiConfig;
 import com.kekeek.travel.model.BaseModel;
 import com.kekeek.travel.model.SitePage;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -10,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.*;
 
+@CacheConfig(cacheNames={"pages"})
 abstract class BaseService {
 
     ApiConfig apiConfig;
@@ -35,7 +38,7 @@ abstract class BaseService {
         fields.put("keywords", String.join(", ", keywords));
         fields.put("description", page.getDescription());
 
-        fields.put("topNavPages", getPages(apiConfig.getUrlTopNavPages()));
+        fields.put("topNavPages", getTopNavPages());
 
         return fields;
     }
@@ -43,6 +46,11 @@ abstract class BaseService {
     SitePage getPage(String pageIdentifier) {
         String pageApiUrl = apiConfig.getUrlPage(pageIdentifier);
         return restTemplate.getForObject(pageApiUrl, SitePage.class);
+    }
+
+    @Cacheable
+    public Collection<SitePage> getTopNavPages() {
+        return getPages(apiConfig.getUrlTopNavPages());
     }
 
     Collection<SitePage> getPages(String url) {

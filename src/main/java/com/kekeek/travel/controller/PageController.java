@@ -38,8 +38,8 @@ public class PageController {
 
     @GetMapping({"/{pageIdentifier}"})
     public String getArticlePage(Model model, @PathVariable final String pageIdentifier) {
-        visitService.addVisit(pageIdentifier);
         model.addAllAttributes(pageService.getArticlePageAttributes(pageIdentifier));
+        visitService.addVisit(pageIdentifier);
 
         return "article";
     }

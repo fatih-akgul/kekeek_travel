@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -75,7 +76,11 @@ public class PageService extends BaseService {
         String contentPageIdentifier = pageIdentifier;
         String parentUrl = apiConfig.getUrlPageParent(contentPageIdentifier);
         SitePage parent = restTemplate.getForObject(parentUrl, SitePage.class);
+        if (parent == null) {
+            VisitService.excludePageFromStats(articlePage);
+        }
         if ("article-page".equals(articlePage.getContentType()) && parent != null) {
+            VisitService.excludePageFromStats(articlePage);
             pageData.putAll(getMetaFields(articlePage, parent));
             pageData.put("article", parent);
             contentPageIdentifier = parent.getIdentifier();
@@ -88,7 +93,8 @@ public class PageService extends BaseService {
         pageData.put("childArticles", getPages(childrenUrl));
 
         String pagesUrl = apiConfig.getUrlPageChildPages(contentPageIdentifier);
-        pageData.put("childPages", getPages(pagesUrl));
+        Collection<SitePage> childPages = getPages(pagesUrl);
+        pageData.put("childPages", childPages);
 
         return pageData;
     }
