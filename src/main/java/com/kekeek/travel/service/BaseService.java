@@ -3,6 +3,7 @@ package com.kekeek.travel.service;
 import com.kekeek.travel.config.ApiConfig;
 import com.kekeek.travel.model.BaseModel;
 import com.kekeek.travel.model.SitePage;
+import com.kekeek.travel.model.Visit;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -39,6 +40,7 @@ abstract class BaseService {
         fields.put("description", page.getDescription());
 
         fields.put("topNavPages", getTopNavPages());
+        fields.put("topVisits", getTopVisits(10));
 
         return fields;
     }
@@ -51,6 +53,16 @@ abstract class BaseService {
     @Cacheable
     public Collection<SitePage> getTopNavPages() {
         return getPages(apiConfig.getUrlTopNavPages());
+    }
+
+    @Cacheable
+    public Collection<Visit> getTopVisits(int topVisitCount) {
+        ResponseEntity<Collection<Visit>> response = restTemplate.exchange(
+                apiConfig.getUrlTopVisits(topVisitCount),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<Collection<Visit>>(){});
+        return response.getBody();
     }
 
     Collection<SitePage> getPages(String url) {

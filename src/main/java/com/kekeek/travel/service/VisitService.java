@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class VisitService extends BaseService {
     private static Map<String, Integer> VISIT_COUNTER = new ConcurrentHashMap<>();
     private static Collection<String> IGNORE_VISITS = new ConcurrentSkipListSet<>();
+    private static Map<String, String> IDENTIFIER_TO_TITLE = new ConcurrentHashMap<>();
 
     private ApiConfig apiConfig;
     private RestTemplate restTemplate;
@@ -36,6 +37,14 @@ public class VisitService extends BaseService {
         }
     }
 
+    public static void addTitle(String identifier, String title) {
+        IDENTIFIER_TO_TITLE.putIfAbsent(identifier, title);
+    }
+
+    private String getTitle(String identifier) {
+        return IDENTIFIER_TO_TITLE.getOrDefault(identifier, identifier);
+    }
+
     static void excludePageFromStats(SitePage page) {
         IGNORE_VISITS.add(page.getIdentifier());
     }
@@ -44,7 +53,7 @@ public class VisitService extends BaseService {
         return !IGNORE_VISITS.contains(pageIdentifier);
     }
 
-    @Scheduled(fixedDelay = 60_000, initialDelay = 120_000)
+    @Scheduled(fixedDelay = 300_000)
     void sendVisits() {
         if (!VISIT_COUNTER.isEmpty()) {
             Map<String, Integer> copy = new HashMap<>(VISIT_COUNTER);
@@ -56,6 +65,7 @@ public class VisitService extends BaseService {
                     Visit visit = new Visit();
                     visit.setIdentifier(pageIdentifier);
                     visit.setCounter(counter);
+                    visit.setTitle(getTitle(pageIdentifier));
                     restTemplate.postForObject(apiConfig.getUrlVisits(), getRequestForPost(visit), Visit.class);
                 } catch (IOException e) {
                     e.printStackTrace();

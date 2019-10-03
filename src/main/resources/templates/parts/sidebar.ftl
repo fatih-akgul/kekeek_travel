@@ -1,13 +1,6 @@
 <h1>Popular</h1>
 <ul>
-    <li><a href="#">Hezarfen Ahmet Celebi</a></li>
-    <li><a href="#">Rize</a></li>
-    <li><a href="#">Common Misconceptions about Turkey</a></li>
-    <li><a href="#">Hezarfen Ahmet Celebi</a></li>
-    <li><a href="#">Rize</a></li>
-    <li><a href="#">Common Misconceptions about Turkey</a></li>
-    <li><a href="#">Hezarfen Ahmet Celebi</a></li>
-    <li><a href="#">Rize</a></li>
-    <li><a href="#">Common Misconceptions about Turkey</a></li>
-    <li><a href="#">Hezarfen Ahmet Celebi</a></li>
+    <#list topVisits as topVisit>
+        <li><strong>${topVisit?index + 1}.</strong>&nbsp;<a href="/${topVisit.identifier}" title="${topVisit.counter}">${topVisit.title}</a></li>
+    </#list>
 </ul>

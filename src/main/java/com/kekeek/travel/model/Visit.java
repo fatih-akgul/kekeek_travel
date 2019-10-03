@@ -7,5 +7,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class Visit extends EntityModel {
     private String identifier;
+    private String title;
     private Integer counter;
 }

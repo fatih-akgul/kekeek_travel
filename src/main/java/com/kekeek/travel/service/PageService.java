@@ -76,9 +76,6 @@ public class PageService extends BaseService {
         String contentPageIdentifier = pageIdentifier;
         String parentUrl = apiConfig.getUrlPageParent(contentPageIdentifier);
         SitePage parent = restTemplate.getForObject(parentUrl, SitePage.class);
-        if (parent == null) {
-            VisitService.excludePageFromStats(articlePage);
-        }
         if ("article-page".equals(articlePage.getContentType()) && parent != null) {
             VisitService.excludePageFromStats(articlePage);
             pageData.putAll(getMetaFields(articlePage, parent));
@@ -86,6 +83,10 @@ public class PageService extends BaseService {
             contentPageIdentifier = parent.getIdentifier();
             parentUrl = apiConfig.getUrlPageParent(contentPageIdentifier);
             parent = restTemplate.getForObject(parentUrl, SitePage.class);
+        } else if (parent == null) {
+            VisitService.excludePageFromStats(articlePage);
+        } else {
+            VisitService.addTitle(articlePage.getIdentifier(), articlePage.getDescription());
         }
         pageData.put("parent", parent);
 

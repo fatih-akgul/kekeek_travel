@@ -79,7 +79,8 @@ body > aside {
   grid-area: sidebar;
   padding: var(--padding-container-main);
   background: var(--color-dark-alt);
-  max-width: max-content;
+  max-width: 25rem;
+  min-width: 15rem;
   justify-self: right;
 }
 
@@ -175,12 +176,9 @@ p {
   border-bottom: 2px solid var(--color-highlight);
 }
 
-.sidebar a {
-  display: block;
-}
-
 .sidebar ul {
   list-style: none;
+  margin-left: 0.4rem;
 }
 
 .sidebar li {
@@ -217,12 +215,7 @@ p::first-letter {
   color: var(--color-highlight);
 }
 
-.highlight {
-  color: var(--color-highlight);
-  font-weight: bold;
-}
-
-strong {
+strong, .highlight {
   color: var(--color-highlight);
   font-weight: bold;
 }
@@ -314,6 +307,15 @@ START: Media Queries
 
   .sidebar {
     text-align: center;
+  }
+
+  body > aside {
+    min-width: 100%;
+  }
+
+  .sidebar li {
+    display: inline;
+    padding: 1.4rem;
   }
 }
 
