@@ -1,12 +1,13 @@
 package com.kekeek.travel.service;
 
 import com.kekeek.travel.config.ApiConfig;
+import com.kekeek.travel.model.BaseModel;
 import com.kekeek.travel.model.SitePage;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.*;
 
 abstract class BaseService {
@@ -51,5 +52,17 @@ abstract class BaseService {
                 null,
                 new ParameterizedTypeReference<Collection<SitePage>>(){});
         return response.getBody();
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return headers;
+    }
+
+    HttpEntity<String> getRequestForPost(BaseModel modelObject) throws IOException {
+        String jsonStr = modelObject.toJson();
+        return new HttpEntity<>(jsonStr, getHeaders());
     }
 }

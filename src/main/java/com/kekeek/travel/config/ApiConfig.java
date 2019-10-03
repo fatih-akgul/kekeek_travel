@@ -46,7 +46,15 @@ public class ApiConfig {
         return getUrlPages() + "/menu-pages";
     }
 
-    public String getUrlEmail() {
-        return apiServer + "/email";
+    public String getUrlEmails() {
+        return apiServer + "/emails";
+    }
+
+    public String getUrlVisits() {
+        return apiServer + "/visits";
+    }
+
+    public String getUrlTopVisits(int topVisitCount) {
+        return getUrlVisits() + "/top/" + topVisitCount;
     }
 }

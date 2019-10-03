@@ -8,9 +8,6 @@ import com.sendgrid.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -83,7 +80,7 @@ public class ContactService extends BaseService {
     }
 
     private void saveEmailRequest(Mail mail, ContactForm contactForm) {
-        com.kekeek.travel.model.Email email = new com.kekeek.travel.model.Email();
+        var email = new com.kekeek.travel.model.Email();
         email.setFromEmail(mail.getFrom().getEmail());
         email.setFromName(mail.getFrom().getName());
         email.setMessage(contactForm.getMessage());
@@ -94,7 +91,7 @@ public class ContactService extends BaseService {
         email.setToEmail(mail.getPersonalization().get(0).getTos().get(0).getEmail());
         email.setSuccess(contactForm.getErrors().isEmpty());
         try {
-            restTemplate.postForObject(apiConfig.getUrlEmail(), getEmailRequest(email), com.kekeek.travel.model.Email.class);
+            restTemplate.postForObject(apiConfig.getUrlEmails(), getRequestForPost(email), email.getClass());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -123,17 +120,5 @@ public class ContactService extends BaseService {
         }
 
         return remoteAddr;
-    }
-
-    private static HttpEntity<String> getEmailRequest(com.kekeek.travel.model.Email email) throws IOException {
-        String jsonStr = email.toJson();
-        return new HttpEntity<>(jsonStr, getHeaders());
-    }
-
-    private static HttpHeaders getHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return headers;
     }
 }

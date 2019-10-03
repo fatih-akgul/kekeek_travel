@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.IOException;
 
 @Data
-abstract class BaseModel {
+public abstract class BaseModel {
     public String toJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);
