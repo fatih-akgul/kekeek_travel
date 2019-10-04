@@ -28,3 +28,4 @@
 ### Custom
 /src/main/resources/content
 QuestLog.md
+/nginx/conf.d/travel.conf
