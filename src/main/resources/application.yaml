@@ -1,0 +1,13 @@
+server:
+  port: 3180
+  error:
+    whitelabel:
+      enabled: false
+
+spring:
+  application:
+    name: travel-api
+  freemarker:
+    template-loader-path: classpath:/templates/
+    suffix: .ftl
+    cache: false
