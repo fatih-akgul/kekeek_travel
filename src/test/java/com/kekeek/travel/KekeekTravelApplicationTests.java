@@ -1,4 +1,4 @@
-package com.kekeek.kekeek_travel;
+package com.kekeek.travel;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

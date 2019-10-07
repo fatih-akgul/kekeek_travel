@@ -12,9 +12,6 @@ public class SiteConfig {
     @Value("${SITE_NAME}")
     private String siteName;
 
-    @Value("${COUNTRY}")
-    private String country;
-
     @Value("${BASE_IMAGE_URL}")
     private String baseImageUrl;
 
