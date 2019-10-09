@@ -18,7 +18,6 @@ import java.util.Map;
 @Service
 @CacheConfig(cacheNames={"pages"})
 public class ContactService extends BaseService {
-    private SiteConfig siteConfig;
     private EmailConfig emailConfig;
     private HttpServletRequest request;
 

@@ -20,7 +20,6 @@ import java.util.Map;
 @Service
 @CacheConfig(cacheNames={"pages"})
 public class PageService extends BaseService {
-    private SiteConfig siteConfig;
 
     @Autowired
     public PageService(RestTemplate restTemplate, SiteConfig siteConfig, ApiConfig apiConfig) {
