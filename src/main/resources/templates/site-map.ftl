@@ -6,10 +6,12 @@
 <main>
     <div class="main-content">
         <h1>${pageTitle}</h1>
+        <div class="content">
         <#list articles as article>
             &nbsp; &nbsp; <strong>${article?index + 1}.</strong> <a
                 href="/${article.identifier}">${article.description}</a> <br>
         </#list>
+        </div>
     </div>
 </main>
 <header>

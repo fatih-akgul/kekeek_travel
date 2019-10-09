@@ -5,7 +5,9 @@
 <body>
 <main>
     <div class="main-content">
-        ${mainContent}
+        <div class="content">
+            ${mainContent}
+        </div>
         <hr>
         <br>
         ${faq}
