@@ -155,8 +155,16 @@ p {
   color: var(--color-highlight);
 }
 
-.main-content p {
+.main-content .content {
+  line-height: 2rem;
   padding-bottom: 1rem;
+}
+
+.main-content .content br {
+  content: "";
+  margin: 2em;
+  display: block;
+  font-size: 60%;
 }
 
 .main-content ul {
@@ -220,7 +228,7 @@ strong, .highlight {
   font-weight: bold;
 }
 
-.main-content .child-pages {
+.main-content .child-pages, .main-content .child-articles {
   text-align: center;
   margin-top: 1rem;
   margin-bottom: 2rem;
@@ -322,6 +330,10 @@ START: Media Queries
 @media(max-width: 700px) {
   .main-nav ul {
     grid-template-columns: 1fr;
+  }
+
+  .main-content .content {
+    text-align: justify;
   }
 }
 

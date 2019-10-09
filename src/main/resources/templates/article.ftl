@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="keywords" content="${keywords}">
-    <meta name="description" content="${description}">
-    <title>${pageTitle}</title>
-    <link href="/css/main.css" rel="stylesheet">
-</head>
+<#include "/parts/html.head.ftl">
 
 <body>
 <main>
@@ -21,22 +15,23 @@
             <div class="picture_caption">
                 ${articlePage.imageDescription}
             </div>
-            <br><br>
+            <br>
         </#if>
 
-        <p>
+        <div class="content">
             ${mainContent}
-        </p>
+        </div>
 
+        <#if childPages?has_content >
         <div class="child-pages">
-            <#if childPages?has_content >
-                <#if article.identifier == articlePage.identifier>
-                    ${article.title}
-                <#else>
-                    <a href="/${article.identifier}">${article.title}</a>
-                </#if>
-                &nbsp;<span class="highlight">|</span>&nbsp;
+
+            <#if article.identifier == articlePage.identifier>
+                ${article.title}
+            <#else>
+                <a href="/${article.identifier}">${article.title}</a>
             </#if>
+            &nbsp;<span class="highlight">|</span>&nbsp;
+
             <#list childPages as childPage>
                 <#if childPage.identifier == articlePage.identifier>
                     ${childPage.title}
@@ -46,11 +41,13 @@
                 <#sep>&nbsp;<span class="highlight">|</span>&nbsp;</#sep>
             </#list>
         </div>
+        </#if>
 
         <!-- google_ad_section_end -->
 
-        <div class="child-pages">
-            <#if childPages?has_content && childArticles?has_content>
+        <#if childArticles?has_content>
+        <div class="child-articles">
+            <#if childPages?has_content>
                 <br><h2>In ${article.title}...</h2>
             </#if>
             <#list childArticles as child>
@@ -62,8 +59,8 @@
                 <#sep>&nbsp;<span class="highlight">--</span>&nbsp;</#sep>
             </#list>
         </div>
+        </#if>
 
-        <br>
     </div>
 </main>
 <header>

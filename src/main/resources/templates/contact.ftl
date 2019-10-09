@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="keywords" content="${keywords}">
-    <meta name="description" content="${description}">
-    <title>${pageTitle}</title>
-    <link href="/css/main.css" rel="stylesheet">
-</head>
+<#include "/parts/html.head.ftl">
 
 <body>
 <main>
@@ -22,11 +16,11 @@
             </#list>
         </#if>
         <form method="post" action="/contact">
-            <label for="contact-name">Name: &nbsp; </label><input type="text" name="name" id="contact-name" size="40" value="${contactFormData.name}" /> <br>
-            <label for="contact-email">Email: &nbsp;&nbsp; </label><input type="text" name="email" id="contact-email" size="40" value="${contactFormData.email}" /> <br>
-            <label for="contact-subject">Subject: </label><input type="text" name="subject" id="contact-subject" size="40" value="${contactFormData.subject}" /> <br>
+            <label for="contact-name">Name: &nbsp; </label><input type="text" name="name" id="contact-name" size="32" value="${contactFormData.name}" /> <br>
+            <label for="contact-email">Email: &nbsp;&nbsp; </label><input type="text" name="email" id="contact-email" size="32" value="${contactFormData.email}" /> <br>
+            <label for="contact-subject">Subject: </label><input type="text" name="subject" id="contact-subject" size="32" value="${contactFormData.subject}" /> <br>
             <br>
-            <label for="contact-message">Message: </label><br><textarea name="message" id="contact-message" rows="9" cols="75">${contactFormData.message}</textarea> <br>
+            <label for="contact-message">Message: </label><br><textarea name="message" id="contact-message" rows="9" cols="42">${contactFormData.message}</textarea> <br>
             <input type="submit" value="Send">
         </form>
     </div>
