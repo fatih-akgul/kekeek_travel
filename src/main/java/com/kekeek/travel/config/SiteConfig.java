@@ -15,6 +15,9 @@ public class SiteConfig {
     @Value("${BASE_IMAGE_URL}")
     private String baseImageUrl;
 
+    @Value("${GOOGLE_ANALYTICS_ID}")
+    private String googleAnalyticsId;
+
     public String getUrlPageImage(String pageIdentifier) {
         return baseImageUrl + "/pages/" + pageIdentifier.substring(0, 2) + "/" + pageIdentifier + ".jpg";
     }
