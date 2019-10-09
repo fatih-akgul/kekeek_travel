@@ -1,12 +1,16 @@
-package com.kekeek.travel.util;
+package com.kekeek.travel.service;
 
+import com.kekeek.travel.config.ApiConfig;
+import com.kekeek.travel.config.DataLoadConfig;
 import com.kekeek.travel.model.Content;
 import com.kekeek.travel.model.PageHierarchy;
 import com.kekeek.travel.model.SitePage;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,35 +18,58 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class ContentLoader {
+@Service
+public class DataLoadService extends BaseService {
+    private RestTemplate restTemplate;
+    private DataLoadConfig dataLoadConfig;
+    private ApiConfig apiConfig;
 
-    private final static String TOP_DIR_NAME = System.getenv("DIR_INPUT");
-    private final static String API_URL = System.getenv("API_SERVER") + "/pages";
-
-    private static String username = System.getenv("API_USERNAME");
-    private static String password = System.getenv("API_PASSWORD");
-
-    private static RestTemplate restTemplate = new RestTemplateBuilder().basicAuthentication(username, password).build();
-
-    public static void main(String[] args) {
-        File topDir = new File(TOP_DIR_NAME);
-        File[] subDirs = topDir.listFiles(File::isDirectory);
-
-        try {
-            // Process each top level directory with null parent
-            Stream.of(Objects.requireNonNull(subDirs)).forEach(subDir -> processFolder(subDir, null));
-
-            // Process non-primary parent-child relationships
-            Stream.of(Objects.requireNonNull(subDirs)).forEach(ContentLoader::processHierarchies);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Autowired
+    public DataLoadService(RestTemplate restTemplate, DataLoadConfig dataLoadConfig, ApiConfig apiConfig) {
+        this.restTemplate = restTemplate;
+        this.dataLoadConfig = dataLoadConfig;
+        this.apiConfig = apiConfig;
     }
 
-    private static void processFolder(File folder, File parentFolder) {
+    public Map<String, String> loadContent(String pathToValidate) {
+        if (pathToValidate.equals(dataLoadConfig.getContentDirectory())) {
+            File topDir = new File(pathToValidate);
+            File[] subDirs = topDir.listFiles(File::isDirectory);
+
+            try {
+                // Process each top level directory with null parent
+                Stream.of(Objects.requireNonNull(subDirs)).forEach(subDir -> processFolder(subDir, null));
+
+                // Process non-primary parent-child relationships
+                Stream.of(Objects.requireNonNull(subDirs)).forEach(this::processHierarchies);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return getErrorResponse(e.getMessage());
+            }
+
+            return Collections.singletonMap("success", "Content load completed");
+        }
+
+        return getErrorResponse("Path not valid: " + pathToValidate);
+    }
+
+    private Map<String, String> getErrorResponse(String additionalMessage) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Content load failed");
+        if (!StringUtils.isEmpty(additionalMessage)) {
+            errorResponse.put("details", additionalMessage);
+        }
+
+        return errorResponse;
+    }
+
+    private void processFolder(File folder, File parentFolder) {
         File[] folderContents = folder.listFiles();
 
         // Return if empty folder
@@ -80,7 +107,7 @@ public class ContentLoader {
                 .forEach(subDir -> processFolder(subDir, folder));
     }
 
-    private static void processHierarchies(File folder) {
+    private void processHierarchies(File folder) {
         File[] folderContents = folder.listFiles();
 
         // Return if empty folder
@@ -92,14 +119,14 @@ public class ContentLoader {
         // Process each subdirectory in it
         Stream.of(folderContents)
                 .filter(File::isDirectory)
-                .forEach(ContentLoader::processHierarchies);
+                .forEach(this::processHierarchies);
 
         // Process non-primary child relationships (childArticle-childIdentifier.json)
         File[] hierarchyFiles = folder.listFiles(f -> f.getName().startsWith("childArticle-") && f.getName().endsWith(".json"));
-        Stream.of(Objects.requireNonNull(hierarchyFiles)).forEach(ContentLoader::processPageHierarchyJson);
+        Stream.of(Objects.requireNonNull(hierarchyFiles)).forEach(this::processPageHierarchyJson);
     }
 
-    private static void processPageHierarchyJson(File jsonFile) {
+    private void processPageHierarchyJson(File jsonFile) {
         try {
             String fileName = jsonFile.getName();
 
@@ -115,14 +142,14 @@ public class ContentLoader {
         }
     }
 
-    private static HttpHeaders getHeaders() {
+    private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         return headers;
     }
 
-    private static HttpEntity<String> getPageRequest(File jsonFile, File parentFolder) throws IOException {
+    private HttpEntity<String> getPageRequest(File jsonFile, File parentFolder) throws IOException {
         String jsonStr = Files.readString(jsonFile.toPath());
 
         SitePage page = SitePage.fromJson(jsonStr, SitePage.class);
@@ -137,9 +164,9 @@ public class ContentLoader {
         return new HttpEntity<>(jsonStr, getHeaders());
     }
 
-    private static SitePage findAndUpdatePage(File jsonFile, File parentFolder) throws HttpClientErrorException.NotFound {
+    private SitePage findAndUpdatePage(File jsonFile, File parentFolder) throws HttpClientErrorException.NotFound {
         String pageIdentifier = jsonFile.getParentFile().getName();
-        String url = API_URL + "/" + pageIdentifier;
+        String url = apiConfig.getUrlPages() + "/" + pageIdentifier;
         SitePage page = restTemplate.getForObject(url, SitePage.class);
         try {
             restTemplate.put(url, getPageRequest(jsonFile, parentFolder));
@@ -152,9 +179,9 @@ public class ContentLoader {
         return page;
     }
 
-    private static SitePage addPage(File jsonFile, File parentFolder) {
+    private SitePage addPage(File jsonFile, File parentFolder) {
         try {
-            return restTemplate.postForObject(API_URL, getPageRequest(jsonFile, parentFolder), SitePage.class);
+            return restTemplate.postForObject(apiConfig.getUrlPages(), getPageRequest(jsonFile, parentFolder), SitePage.class);
         } catch (IOException ex) {
             System.out.println("IOException of type " + ex.getClass()
                     + " while adding page from file " + jsonFile.getAbsolutePath() + ": "
@@ -170,7 +197,7 @@ public class ContentLoader {
         return null;
     }
 
-    private static void processPageHierarchy(SitePage page, File parentFolder) {
+    private void processPageHierarchy(SitePage page, File parentFolder) {
         if (parentFolder != null) {
             try {
                 PageHierarchy pageHierarchy = new PageHierarchy();
@@ -188,13 +215,13 @@ public class ContentLoader {
         }
     }
 
-    private static void postPageHierarchy(PageHierarchy pageHierarchy) throws IOException {
+    private void postPageHierarchy(PageHierarchy pageHierarchy) throws IOException {
         String jsonStr = pageHierarchy.toJson();
-        String url = API_URL + "/hierarchy";
+        String url = apiConfig.getUrlPages() + "/hierarchy";
         restTemplate.postForObject(url, new HttpEntity<>(jsonStr, getHeaders()), PageHierarchy.class);
     }
 
-    private static void processPageContents(SitePage page, File folder) {
+    private void processPageContents(SitePage page, File folder) {
         String pageName = page.getIdentifier();
 
         File[] htmlFiles = folder.listFiles(f -> f.isFile() && f.getName().endsWith(".html"));
@@ -203,7 +230,7 @@ public class ContentLoader {
                 String contentIdentifier = getFileNameWithoutExtension(htmlFile);
                 System.out.println(">>>>> " + pageName + "/" + contentIdentifier);
 
-                String baseUrl = API_URL + "/" + pageName + "/contents";
+                String baseUrl = apiConfig.getUrlPages() + "/" + pageName + "/contents";
                 try {
                     findAndUpdateContent(baseUrl, htmlFile);
                 } catch (HttpClientErrorException.NotFound e) {
@@ -216,7 +243,7 @@ public class ContentLoader {
         }
     }
 
-    private static void findAndUpdateContent(String baseUrl, File htmlFile) throws HttpClientErrorException.NotFound {
+    private void findAndUpdateContent(String baseUrl, File htmlFile) throws HttpClientErrorException.NotFound {
         String url = baseUrl + "/" + getFileNameWithoutExtension(htmlFile);
         restTemplate.getForObject(url, Content.class);
         try {
@@ -229,7 +256,7 @@ public class ContentLoader {
         }
     }
 
-    private static void addContent(String baseUrl, File htmlFile) {
+    private void addContent(String baseUrl, File htmlFile) {
         try {
             restTemplate.postForObject(baseUrl, getContentRequest(htmlFile), Content.class);
         } catch (Exception e) {
@@ -240,7 +267,7 @@ public class ContentLoader {
         }
     }
 
-    private static HttpEntity<String> getContentRequest(File htmlFile) throws IOException {
+    private HttpEntity<String> getContentRequest(File htmlFile) throws IOException {
         Content content = new Content();
         String contentIdentifier = getFileNameWithoutExtension(htmlFile);
         File jsonFile = new File(htmlFile.getParent() + "/" + contentIdentifier + ".content.json");
