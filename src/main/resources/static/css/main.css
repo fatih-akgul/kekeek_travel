@@ -325,6 +325,10 @@ START: Media Queries
     display: inline;
     padding: 1.4rem;
   }
+
+  .sidebar ul {
+    line-height: 2em;
+  }
 }
 
 @media(max-width: 700px) {
@@ -334,10 +338,6 @@ START: Media Queries
 
   .main-content .content {
     text-align: justify;
-  }
-
-  .sidebar ul {
-    line-height: 2em;
   }
 }
 
