@@ -1,6 +1,7 @@
 package com.kekeek.travel.service;
 
 import com.kekeek.travel.config.ApiConfig;
+import com.kekeek.travel.config.SiteConfig;
 import com.kekeek.travel.model.BaseModel;
 import com.kekeek.travel.model.SitePage;
 import com.kekeek.travel.model.Visit;
@@ -17,6 +18,7 @@ import java.util.*;
 abstract class BaseService {
 
     ApiConfig apiConfig;
+    SiteConfig siteConfig;
     RestTemplate restTemplate;
 
     Map<String, Object> getMetaFields(SitePage page) {
@@ -41,6 +43,8 @@ abstract class BaseService {
 
         fields.put("topNavPages", getTopNavPages());
         fields.put("topVisits", getTopVisits(10));
+
+        fields.put("googleAnalyticsId", siteConfig.getGoogleAnalyticsId());
 
         return fields;
     }
