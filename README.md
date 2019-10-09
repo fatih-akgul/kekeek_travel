@@ -14,3 +14,4 @@ Environment variables required for KekeekTravelApplication:
 - EMAIL_TO_ADDRESS: Address to send contact emails to
 - DIR_INPUT: Input directory to load content from
 - GOOGLE_ANALYTICS_ID: ID for Google Analytics
+- GOOGLE_ADSENSE_ID: ID for Google Adsense

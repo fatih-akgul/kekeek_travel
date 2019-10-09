@@ -18,6 +18,9 @@ public class SiteConfig {
     @Value("${GOOGLE_ANALYTICS_ID}")
     private String googleAnalyticsId;
 
+    @Value("${GOOGLE_ADSENSE_ID}")
+    private String googleAdsenseId;
+
     public String getUrlPageImage(String pageIdentifier) {
         return baseImageUrl + "/pages/" + pageIdentifier.substring(0, 2) + "/" + pageIdentifier + ".jpg";
     }
