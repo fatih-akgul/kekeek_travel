@@ -335,6 +335,10 @@ START: Media Queries
   .main-content .content {
     text-align: justify;
   }
+
+  .sidebar ul {
+    line-height: 2em;
+  }
 }
 
 /*
