@@ -58,6 +58,11 @@ public class PageService extends BaseService {
         return pageData;
     }
 
+    @Cacheable(key = "\"search\"")
+    public Map<String, Object> getSearchAttributes() {
+        return getMetaFields("search");
+    }
+
     @Cacheable(key = "#pageIdentifier")
     public Map<String, Object> getArticlePageAttributes(String pageIdentifier) {
         SitePage articlePage = getPage(pageIdentifier);

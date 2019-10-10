@@ -45,7 +45,8 @@ abstract class BaseService {
         fields.put("topVisits", getTopVisits(10));
 
         fields.put("googleAnalyticsId", siteConfig.getGoogleAnalyticsId());
-        fields.put("googleAdsenseId", siteConfig.getGoogleAdsenseId());
+        fields.put("googleAdsensePublisherId", siteConfig.getGoogleAdsensePublisherId());
+        fields.put("googleAdsenseSearchId", siteConfig.getGoogleAdsenseSearchId());
 
         return fields;
     }

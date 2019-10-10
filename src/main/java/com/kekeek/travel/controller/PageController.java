@@ -36,6 +36,13 @@ public class PageController {
         return "site-map";
     }
 
+    @GetMapping({"/search"})
+    public String getSearch(Model model) {
+        model.addAllAttributes(pageService.getSearchAttributes());
+
+        return "search";
+    }
+
     @GetMapping({"/{pageIdentifier}"})
     public String getArticlePage(Model model, @PathVariable final String pageIdentifier) {
         model.addAllAttributes(pageService.getArticlePageAttributes(pageIdentifier));
