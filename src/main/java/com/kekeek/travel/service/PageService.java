@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class PageService extends BaseService {
         return pageData;
     }
 
-    @Cacheable(unless = "#result.get(\"articles\").equals(\"\")")
+    @Cacheable(unless = "#result.get(\"articles\").size() == 0")
     public Map<String, Object> getSiteMapAttributes() {
         String pageIdentifier = "site-map";
         Map<String, Object> pageData = getMetaFields(pageIdentifier);
@@ -52,6 +53,9 @@ public class PageService extends BaseService {
                 null,
                 new ParameterizedTypeReference<List<SitePage>>(){});
         List<SitePage> articles = response.getBody();
+        if (articles == null) {
+            articles = new ArrayList<>();
+        }
 
         pageData.put("articles", articles);
 
