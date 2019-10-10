@@ -28,7 +28,7 @@ public class PageService extends BaseService {
         this.apiConfig = apiConfig;
     }
 
-    @Cacheable(unless = "#result.get(\"mainContent\") == null")
+    @Cacheable(unless = "#result.get(\"mainContent\").equals(\"\")")
     public Map<String, Object> getHomePageAttributes() {
         String pageIdentifier = "homepage";
         Map<String, Object> pageData = getMetaFields(pageIdentifier);
@@ -41,7 +41,7 @@ public class PageService extends BaseService {
         return pageData;
     }
 
-    @Cacheable(unless = "#result.get(\"articles\") == null")
+    @Cacheable(unless = "#result.get(\"articles\").equals(\"\")")
     public Map<String, Object> getSiteMapAttributes() {
         String pageIdentifier = "site-map";
         Map<String, Object> pageData = getMetaFields(pageIdentifier);
@@ -106,6 +106,7 @@ public class PageService extends BaseService {
             return content.getContentText();
         }
 
-        return null;
+        System.out.println(">>>>> Null content: " + contentUrl);
+        return "";
     }
 }
