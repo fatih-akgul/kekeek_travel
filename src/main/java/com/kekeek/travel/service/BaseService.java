@@ -55,12 +55,12 @@ abstract class BaseService {
         return restTemplate.getForObject(pageApiUrl, SitePage.class);
     }
 
-    @Cacheable
+    @Cacheable(key = "\"top-nav-pages\"")
     public Collection<SitePage> getTopNavPages() {
         return getPages(apiConfig.getUrlTopNavPages());
     }
 
-    @Cacheable
+    @Cacheable(key = "\"top-visits\"")
     public Collection<Visit> getTopVisits(int topVisitCount) {
         ResponseEntity<Collection<Visit>> response = restTemplate.exchange(
                 apiConfig.getUrlTopVisits(topVisitCount),

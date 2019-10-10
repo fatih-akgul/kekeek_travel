@@ -103,7 +103,7 @@ public class ContactService extends BaseService {
         return pageData;
     }
 
-    @Cacheable
+    @Cacheable(key = "\"contact\"")
     public Map<String, Object> getContactPageMetaFields() {
         return getMetaFields("contact");
     }

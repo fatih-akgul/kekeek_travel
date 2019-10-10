@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class PageService extends BaseService {
         this.apiConfig = apiConfig;
     }
 
-    @Cacheable(unless = "#result.get(\"mainContent\").equals(\"\")")
+    @Cacheable(key = "\"homepage\"")
     public Map<String, Object> getHomePageAttributes() {
         String pageIdentifier = "homepage";
         Map<String, Object> pageData = getMetaFields(pageIdentifier);
@@ -42,7 +41,7 @@ public class PageService extends BaseService {
         return pageData;
     }
 
-    @Cacheable(unless = "#result.get(\"articles\").size() == 0")
+    @Cacheable(key = "\"site-map\"")
     public Map<String, Object> getSiteMapAttributes() {
         String pageIdentifier = "site-map";
         Map<String, Object> pageData = getMetaFields(pageIdentifier);
@@ -53,16 +52,13 @@ public class PageService extends BaseService {
                 null,
                 new ParameterizedTypeReference<List<SitePage>>(){});
         List<SitePage> articles = response.getBody();
-        if (articles == null) {
-            articles = new ArrayList<>();
-        }
 
         pageData.put("articles", articles);
 
         return pageData;
     }
 
-    @Cacheable
+    @Cacheable(key = "#pageIdentifier")
     public Map<String, Object> getArticlePageAttributes(String pageIdentifier) {
         SitePage articlePage = getPage(pageIdentifier);
         Map<String, Object> pageData = getMetaFields(articlePage);
@@ -110,7 +106,6 @@ public class PageService extends BaseService {
             return content.getContentText();
         }
 
-        System.out.println(">>>>> Null content: " + contentUrl);
-        return "";
+        return null;
     }
 }
