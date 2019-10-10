@@ -41,7 +41,7 @@ public class PageService extends BaseService {
         return pageData;
     }
 
-    @Cacheable
+    @Cacheable(unless = "#result.get(\"articles\") == null")
     public Map<String, Object> getSiteMapAttributes() {
         String pageIdentifier = "site-map";
         Map<String, Object> pageData = getMetaFields(pageIdentifier);
