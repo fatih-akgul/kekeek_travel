@@ -28,7 +28,7 @@ public class PageService extends BaseService {
         this.apiConfig = apiConfig;
     }
 
-    @Cacheable
+    @Cacheable(unless = "#result.get(\"mainContent\") == null")
     public Map<String, Object> getHomePageAttributes() {
         String pageIdentifier = "homepage";
         Map<String, Object> pageData = getMetaFields(pageIdentifier);
