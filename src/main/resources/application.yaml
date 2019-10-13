@@ -1,5 +1,5 @@
 server:
-  port: 3180
+  port: ${PORT}
   error:
     whitelabel:
       enabled: false

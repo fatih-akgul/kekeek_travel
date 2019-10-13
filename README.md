@@ -3,6 +3,7 @@ This project implements a travel information website using the Kekeek API
 
 Environment variables required for KekeekTravelApplication:
 --
+- PORT: Port number for the Spring boot application to run
 - API_USERNAME: Username for the content API
 - API_PASSWORD: Password for the content API
 - API_SERVER: URL of the content API server
