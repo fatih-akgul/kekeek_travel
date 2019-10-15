@@ -34,9 +34,6 @@ public class PageService extends BaseService {
         Map<String, Object> pageData = getMetaFields(pageIdentifier);
 
         pageData.put("mainContent", getContent(pageIdentifier, "homepage"));
-        pageData.put("centerLinks", getContent(pageIdentifier, "links-center"));
-        pageData.put("faq", getContent(pageIdentifier, "faq"));
-        pageData.put("latestArticles", getContent(pageIdentifier, "latest-articles"));
 
         return pageData;
     }

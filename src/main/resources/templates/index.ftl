@@ -8,11 +8,6 @@
         <div class="content">
             ${mainContent}
         </div>
-        <hr>
-        <br>
-        ${faq}
-        <br>
-        ${latestArticles}
     </div>
 </main>
 <header>
